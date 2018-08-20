@@ -7,7 +7,7 @@
                     <span class="icon is-medium">
                         <i class="fas fa-exclamation-circle"></i>
                     </span>
-                    UNFILTERED
+                    UNFILTERED NINJAS
                 </h1>
                 <h2 class="subtitle">
                     The hilarious, say-anything-you-want party game!
@@ -56,7 +56,7 @@
                 <br><br>
 
                 <h2 class="subtitle">
-                    That being said, we do take personal threats and attacks on Users very seriously.
+                    That being said, we do take personal threats and attacks on our Users very seriously.
                     <br>
                     Please report a User <a href="{{ url('/report') }}"><b>here</b></a>
                 </h2>

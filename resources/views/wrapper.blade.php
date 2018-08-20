@@ -11,7 +11,7 @@
                         <span class="icon is-medium">
                             <i class="fas fa-exclamation-circle"></i>
                         </span>
-                        UNFILTERED
+                        UNFILTERED NINJAS
                     </a>
                     <div class="navbar-burger burger" data-target="navbar">
                         <span></span>
