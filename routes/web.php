@@ -23,8 +23,9 @@ Route::middleware('ninja')->group(function () {
     // ---> GAME
     Route::prefix('play')->group(function () {
         Route::get('/', 'GameController@index')->name('find.game');
-        Route::get('/session/{session_id}', 'GameController@play')->name('play.game');
+        Route::get('/lobby/{session_id}', 'GameController@lobby')->name('game.lobby');
     });
+    Route::post('create/game', 'GameController@createGame')->name('create.game');
 
     // ---> PROFILE
     Route::prefix('my-profile')->group(function () {

@@ -25,7 +25,7 @@
                                 <a class="button is-danger is-outlined"> This is your Game!</a>
                             </p>
                             <p v-else>
-                                <a :href="'/play/session/' + game.session_id" class="button is-success">JOIN GAME</a>
+                                <a :href="'/play/lobby/' + game.session_id" class="button is-success">JOIN GAME</a>
                             </p>
                         </div>
                     </div>
