@@ -15,6 +15,6 @@ class Game
      * @var array
      */
     protected $fillable = [
-        'session_id', 'game_id', 'ninja_id', 'max_sessions', 'current_sessions'
+        'session_id', 'game_id', 'ninja_id', 'max_sessions', 'current_sessions', 'type'
     ];
 }
