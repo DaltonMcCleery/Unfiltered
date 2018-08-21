@@ -18,4 +18,8 @@ class Games extends Model
     protected $fillable = [
         'session_id', 'game_id', 'ninja_id', 'max_sessions', 'current_sessions', 'type'
     ];
+
+    public function Host() {
+        return $this->hasOne('App\User', 'id', 'ninja_id');
+    }
 }

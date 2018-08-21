@@ -17,13 +17,21 @@ class GameController extends Controller
         return view('game.find');
     }
 
+    public function play(Games $session) {
+        dd($session);
+    }
+
     /**
      * Get the currently available Games List (Public Games)
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function find() {
-        $games = Games::where('type', 'public')->latest()->get();
+        $games = Games::with('Host')
+            ->where('type', 'public')
+            ->latest()
+            ->get();
+
         return GamesResource::collection($games);
     }
 
