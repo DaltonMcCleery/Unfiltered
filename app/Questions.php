@@ -2,10 +2,11 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Questions
+class Questions extends Model
 {
     protected $table = 'game_questions';
 
