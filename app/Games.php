@@ -16,7 +16,7 @@ class Games extends Model
      * @var array
      */
     protected $fillable = [
-        'session_id', 'game_id', 'ninja_id', 'max_sessions', 'current_sessions', 'type'
+        'session_id', 'game_id', 'ninja_id', 'max_sessions', 'current_sessions', 'type', 'status'
     ];
 
     public function Host() {

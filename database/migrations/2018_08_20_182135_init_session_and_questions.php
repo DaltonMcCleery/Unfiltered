@@ -21,6 +21,7 @@ class InitSessionAndQuestions extends Migration
             $table->string('type')->default('public');
             $table->integer('max_sessions')->default(6);
             $table->integer('current_sessions')->default(1);
+            $table->integer('status')->default(0); // 0 = not started, 1 = in progress (can't join game that is in progress)
             $table->timestamps();
         });
 
