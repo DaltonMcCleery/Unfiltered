@@ -24883,7 +24883,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_buef
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('example-component', __webpack_require__(45));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('available-games', __webpack_require__(45));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app'
@@ -47806,7 +47806,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/ExampleComponent.vue"
+Component.options.__file = "resources/assets/js/components/AvailableGames.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -47815,9 +47815,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7168fb6a", Component.options)
+    hotAPI.createRecord("data-v-1044576f", Component.options)
   } else {
-    hotAPI.reload("data-v-7168fb6a", Component.options)
+    hotAPI.reload("data-v-1044576f", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -47958,10 +47958,43 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    mounted: function mounted() {
-        console.log('Component mounted.');
+    data: function data() {
+        return {
+            games: null,
+            endpoint: "api/games/find"
+        };
+    },
+    created: function created() {
+        this.fetch();
+    },
+
+
+    methods: {
+        fetch: function fetch() {
+            var _this = this;
+
+            // Get available Games
+            axios.get(this.endpoint).then(function (_ref) {
+                var data = _ref.data;
+
+                _this.games = data.date;
+            });
+        }
     }
 });
 
@@ -47973,26 +48006,50 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "tile is-ancestor" }, [
+    _vm.games
+      ? _c(
+          "div",
+          _vm._l(_vm.games, function(game) {
+            return _c("div", { staticClass: "tile is-parent" }, [
+              _c("article", { staticClass: "tile is-child box" }, [
+                _c(
+                  "p",
+                  { staticClass: "title", staticStyle: { color: "black" } },
+                  [_vm._v("Title")]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "content" }, [
+                  _c("p", [
+                    _vm._v(
+                      "\n                        Session ID: " +
+                        _vm._s(game.session_id) +
+                        "\n                    "
+                    )
+                  ])
+                ])
+              ])
+            ])
+          })
+        )
+      : _c("div", [_vm._m(0)])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card card-default" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Example Component")
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              )
-            ])
+    return _c("div", { staticClass: "tile is-parent" }, [
+      _c("article", { staticClass: "tile is-child box" }, [
+        _c("p", { staticClass: "title", staticStyle: { color: "black" } }, [
+          _vm._v("No available Games")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "content" }, [
+          _c("p", [
+            _vm._v("\n                        Trying creating one "),
+            _c("a", { attrs: { href: "#" } }, [_vm._v("here")])
           ])
         ])
       ])
@@ -48004,7 +48061,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-7168fb6a", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-1044576f", module.exports)
   }
 }
 
