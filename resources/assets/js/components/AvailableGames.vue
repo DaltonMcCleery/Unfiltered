@@ -21,7 +21,10 @@
                                 <br>
                                 Current Players: {{ game.current_sessions }} out of {{ game.max_sessions }}
                             </p>
-                            <p>
+                            <p v-if="authed_user_id === game.ninja_id">
+                                <a class="button is-danger is-outlined"> This is your Game!</a>
+                            </p>
+                            <p v-else>
                                 <a :href="'/play/session/' + game.session_id" class="button is-success">JOIN GAME</a>
                             </p>
                         </div>
@@ -62,6 +65,10 @@
                 count: 0,
                 endpoint: "api/games/find"
             };
+        },
+
+        props: {
+            authed_user_id: Number,
         },
 
         created() {
