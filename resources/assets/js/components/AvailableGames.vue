@@ -1,24 +1,28 @@
 <template>
 
         <!-- Available Games (if any) -->
-        <div class="columns is-desktop is-fluid" v-if="games">
-            <div class="column" v-for="game in games">
-                <div class="card">
-                    <header class="card-header">
-                        <p class="card-header-title">
-                            {{ game.game_id }}
-                        </p>
-                    </header>
-                    <div class="card-content">
-                        <div class="content">
-                            <p>
-                                Host Ninja: {{ game.host.username }}
-                                <br>
-                                Current Players: {{ game.current_sessions }} out of {{ game.max_sessions }}
+        <div v-if="games">
+            <a @click="fetch()" class="button is-info">REFRESH LIST</a>
+            <br><br>
+            <div class="columns is-desktop is-fluid">
+                <div class="column" v-for="game in games">
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                {{ game.game_id }}
                             </p>
-                            <p>
-                                <a :href="'/play/session/' + game.session_id" class="button is-success">JOIN GAME</a>
-                            </p>
+                        </header>
+                        <div class="card-content">
+                            <div class="content">
+                                <p>
+                                    Host Ninja: {{ game.host.username }}
+                                    <br>
+                                    Current Players: {{ game.current_sessions }} out of {{ game.max_sessions }}
+                                </p>
+                                <p>
+                                    <a :href="'/play/session/' + game.session_id" class="button is-success">JOIN GAME</a>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
