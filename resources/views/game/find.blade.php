@@ -13,7 +13,7 @@
                 </h2>
                 @include('game.create')
 
-                <br>
+                <br><br>
 
                 {{-- Available Public Games --}}
                 <h2 class="subtitle">
@@ -22,7 +22,6 @@
                     </span>
                     PUBLIC GAMES
                 </h2>
-                <br>
                 <available-games :authed_user_id = {{ Auth::user()->id }}></available-games>
             </div>
         </div>

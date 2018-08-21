@@ -47998,6 +47998,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -48007,6 +48010,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             endpoint: "api/games/find"
         };
     },
+
+
+    props: {
+        authed_user_id: Number
+    },
+
     created: function created() {
         this.fetch();
     },
@@ -48087,16 +48096,24 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    _c("p", [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "button is-success",
-                          attrs: { href: "/play/session/" + game.session_id }
-                        },
-                        [_vm._v("JOIN GAME")]
-                      )
-                    ])
+                    _vm.authed_user_id === game.ninja_id
+                      ? _c("p", [
+                          _c(
+                            "a",
+                            { staticClass: "button is-danger is-outlined" },
+                            [_vm._v(" This is your Game!")]
+                          )
+                        ])
+                      : _c("p", [
+                          _c(
+                            "a",
+                            {
+                              staticClass: "button is-success",
+                              attrs: { href: "/play/lobby/" + game.session_id }
+                            },
+                            [_vm._v("JOIN GAME")]
+                          )
+                        ])
                   ])
                 ])
               ])
