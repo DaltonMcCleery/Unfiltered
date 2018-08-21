@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::resource('game', 'GameController')
+Route::middleware('api')->resource('game', 'GameController')
     ->only(['postQuestion', 'postAnswer', 'decideWinner']);
 
-Route::get('games/find', 'GameController@find');
+Route::middleware('api')->get('games/find', 'GameController@find');
