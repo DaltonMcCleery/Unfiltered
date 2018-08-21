@@ -20,6 +20,8 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
-        "buefy": "^0.6.6"
+        "buefy": "^0.6.6",
+        "laravel-echo": "^1.4.0",
+        "pusher-js": "^4.3.0"
     }
 }
