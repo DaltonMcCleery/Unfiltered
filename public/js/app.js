@@ -47985,11 +47985,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             games: null,
+            count: 0,
             endpoint: "api/games/find"
         };
     },
@@ -48007,6 +48021,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 var data = _ref.data;
 
                 _this.games = data.data;
+                _this.count = _this.games.length;
             });
         }
     }
@@ -48020,75 +48035,99 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm.games
-    ? _c(
-        "div",
-        { staticClass: "columns is-desktop is-fluid" },
-        _vm._l(_vm.games, function(game) {
-          return _c("div", { staticClass: "column" }, [
-            _c("div", { staticClass: "card" }, [
-              _c("header", { staticClass: "card-header" }, [
-                _c("p", { staticClass: "card-header-title" }, [
-                  _vm._v(
-                    "\n                    " +
-                      _vm._s(game.game_id) +
-                      "\n                "
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "card-content" }, [
-                _c("div", { staticClass: "content" }, [
-                  _c("p", [
+  return _c("div", { attrs: { id: "games" } }, [
+    _c(
+      "a",
+      {
+        staticClass: "button is-info",
+        on: {
+          click: function($event) {
+            _vm.fetch()
+          }
+        }
+      },
+      [_vm._v("REFRESH LIST")]
+    ),
+    _vm._v(" "),
+    _c("br"),
+    _c("br"),
+    _vm._v(" "),
+    _vm.count !== 0
+      ? _c(
+          "div",
+          { staticClass: "columns is-desktop is-fluid" },
+          _vm._l(_vm.games, function(game) {
+            return _c("div", { staticClass: "column" }, [
+              _c("div", { staticClass: "card" }, [
+                _c("header", { staticClass: "card-header" }, [
+                  _c("p", { staticClass: "card-header-title" }, [
                     _vm._v(
-                      "\n                        Host Ninja: " +
-                        _vm._s(game.host.username) +
-                        "\n                        "
-                    ),
-                    _c("br"),
-                    _vm._v(
-                      "\n                        Current Players: " +
-                        _vm._s(game.current_sessions) +
-                        " out of " +
-                        _vm._s(game.max_sessions) +
+                      "\n                        " +
+                        _vm._s(game.game_id) +
                         "\n                    "
                     )
-                  ]),
-                  _vm._v(" "),
-                  _c("p", [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "button is-success",
-                        attrs: { href: "/play/session/" + game.session_id }
-                      },
-                      [_vm._v("JOIN GAME")]
-                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "card-content" }, [
+                  _c("div", { staticClass: "content" }, [
+                    _c("p", [
+                      _vm._v(
+                        "\n                            Host Ninja: " +
+                          _vm._s(game.host.username) +
+                          "\n                            "
+                      ),
+                      _c("br"),
+                      _vm._v(
+                        "\n                            Current Players: " +
+                          _vm._s(game.current_sessions) +
+                          " out of " +
+                          _vm._s(game.max_sessions) +
+                          "\n                        "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "button is-success",
+                          attrs: { href: "/play/session/" + game.session_id }
+                        },
+                        [_vm._v("JOIN GAME")]
+                      )
+                    ])
                   ])
                 ])
               ])
             ])
-          ])
-        })
-      )
-    : _c("div", { staticClass: "tile is-ancestor" }, [_vm._m(0)])
+          })
+        )
+      : _c("div", { staticClass: "columns is-desktop is-fluid" }, [_vm._m(0)])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "tile is-parent" }, [
-      _c("article", { staticClass: "tile is-child box" }, [
-        _c("p", { staticClass: "title", staticStyle: { color: "black" } }, [
-          _vm._v("No available Games")
+    return _c("div", { staticClass: "column" }, [
+      _c("div", { staticClass: "card", attrs: { id: "no_public_games" } }, [
+        _c("header", { staticClass: "card-header" }, [
+          _c("p", { staticClass: "card-header-title" }, [
+            _vm._v(
+              "\n                        No Public Games Found\n                    "
+            )
+          ])
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "content" }, [
-          _c("p", [
-            _vm._v(
-              "\n                    Trying creating one\n                "
-            )
+        _c("div", { staticClass: "card-content" }, [
+          _c("div", { staticClass: "content" }, [
+            _c("p", [
+              _vm._v(
+                "\n                            Refresh the List or Create your own Game!\n                        "
+              )
+            ])
           ])
         ])
       ])
