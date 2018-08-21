@@ -1,30 +1,44 @@
 <template>
-    <div class="tile is-ancestor">
-        <div v-if="games">
-            <div class="tile is-parent" v-for="game in games">
-                <article class="tile is-child box">
-                    <p class="title" style="color: black;">Title</p>
-                    <div class="content">
-                        <p>
-                            Session ID: {{ game.session_id }}
+
+        <!-- Available Games (if any) -->
+        <div class="columns is-desktop is-fluid" v-if="games">
+            <div class="column" v-for="game in games">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            {{ game.game_id }}
                         </p>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            <p>
+                                Host Ninja: {{ game.host.username }}
+                                <br>
+                                Session ID: {{ game.session_id }}
+                            </p>
+                            <p>
+                                <a :href="'/play/session/' + game.session_id" class="button">JOIN</a>
+                            </p>
+                        </div>
                     </div>
-                </article>
+                </div>
             </div>
         </div>
-        <div v-else>
+
+        <!-- No Available Games -->
+        <div class="tile is-ancestor" v-else>
             <div class="tile is-parent">
                 <article class="tile is-child box">
                     <p class="title" style="color: black;">No available Games</p>
                     <div class="content">
                         <p>
-                            Trying creating one <a href="#">here</a>
+                            Trying creating one
                         </p>
                     </div>
                 </article>
             </div>
         </div>
-    </div>
+
 </template>
 
 <script>
@@ -44,7 +58,7 @@
             fetch() {
                 // Get available Games
                 axios.get(this.endpoint).then(({ data }) => {
-                    this.games = data.date;
+                    this.games = data.data;
                 });
             },
         }

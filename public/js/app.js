@@ -47971,6 +47971,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -47992,7 +48006,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios.get(this.endpoint).then(function (_ref) {
                 var data = _ref.data;
 
-                _this.games = data.date;
+                _this.games = data.data;
             });
         }
     }
@@ -48006,34 +48020,56 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "tile is-ancestor" }, [
-    _vm.games
-      ? _c(
-          "div",
-          _vm._l(_vm.games, function(game) {
-            return _c("div", { staticClass: "tile is-parent" }, [
-              _c("article", { staticClass: "tile is-child box" }, [
-                _c(
-                  "p",
-                  { staticClass: "title", staticStyle: { color: "black" } },
-                  [_vm._v("Title")]
-                ),
-                _vm._v(" "),
+  return _vm.games
+    ? _c(
+        "div",
+        { staticClass: "columns is-desktop is-fluid" },
+        _vm._l(_vm.games, function(game) {
+          return _c("div", { staticClass: "column" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("header", { staticClass: "card-header" }, [
+                _c("p", { staticClass: "card-header-title" }, [
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(game.game_id) +
+                      "\n                "
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "card-content" }, [
                 _c("div", { staticClass: "content" }, [
                   _c("p", [
+                    _vm._v(
+                      "\n                        Host Ninja: " +
+                        _vm._s(game.host.username) +
+                        "\n                        "
+                    ),
+                    _c("br"),
                     _vm._v(
                       "\n                        Session ID: " +
                         _vm._s(game.session_id) +
                         "\n                    "
                     )
+                  ]),
+                  _vm._v(" "),
+                  _c("p", [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "button",
+                        attrs: { href: "/play/session/" + game.session_id }
+                      },
+                      [_vm._v("JOIN")]
+                    )
                   ])
                 ])
               ])
             ])
-          })
-        )
-      : _c("div", [_vm._m(0)])
-  ])
+          ])
+        })
+      )
+    : _c("div", { staticClass: "tile is-ancestor" }, [_vm._m(0)])
 }
 var staticRenderFns = [
   function() {
@@ -48048,8 +48084,9 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("div", { staticClass: "content" }, [
           _c("p", [
-            _vm._v("\n                        Trying creating one "),
-            _c("a", { attrs: { href: "#" } }, [_vm._v("here")])
+            _vm._v(
+              "\n                    Trying creating one\n                "
+            )
           ])
         ])
       ])
