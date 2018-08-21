@@ -19,6 +19,7 @@ class InitSessionAndQuestions extends Migration
             $table->string('game_id');
             $table->integer('ninja_id')->references('id')->on('users');
             $table->integer('max_sessions')->default(6);
+            $table->integer('current_sessions')->default(1);
             $table->timestamps();
         });
 

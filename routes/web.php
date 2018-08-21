@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/how-to-play', function () {
     return view('how_to');
@@ -34,3 +32,5 @@ Route::middleware('ninja')->group(function () {
         Route::get('/update', 'NinjaController@updateProfile')->name('ninja.update.profile');
     });
 });
+
+Auth::routes();
