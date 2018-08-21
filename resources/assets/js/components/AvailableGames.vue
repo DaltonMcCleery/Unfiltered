@@ -14,10 +14,10 @@
                             <p>
                                 Host Ninja: {{ game.host.username }}
                                 <br>
-                                Session ID: {{ game.session_id }}
+                                Current Players: {{ game.current_sessions }} out of {{ game.max_sessions }}
                             </p>
                             <p>
-                                <a :href="'/play/session/' + game.session_id" class="button">JOIN</a>
+                                <a :href="'/play/session/' + game.session_id" class="button is-success">JOIN GAME</a>
                             </p>
                         </div>
                     </div>

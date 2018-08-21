@@ -29,6 +29,7 @@ class GameController extends Controller
     public function find() {
         $games = Games::with('Host')
             ->where('type', 'public')
+            ->whereColumn('max_sessions', '!=', 'current_sessions')
             ->latest()
             ->get();
 

@@ -48047,8 +48047,10 @@ var render = function() {
                     ),
                     _c("br"),
                     _vm._v(
-                      "\n                        Session ID: " +
-                        _vm._s(game.session_id) +
+                      "\n                        Current Players: " +
+                        _vm._s(game.current_sessions) +
+                        " out of " +
+                        _vm._s(game.max_sessions) +
                         "\n                    "
                     )
                   ]),
@@ -48057,10 +48059,10 @@ var render = function() {
                     _c(
                       "a",
                       {
-                        staticClass: "button",
+                        staticClass: "button is-success",
                         attrs: { href: "/play/session/" + game.session_id }
                       },
-                      [_vm._v("JOIN")]
+                      [_vm._v("JOIN GAME")]
                     )
                   ])
                 ])
