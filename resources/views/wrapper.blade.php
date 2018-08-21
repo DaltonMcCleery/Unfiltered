@@ -38,9 +38,14 @@
                                 </a>
                             </div>
                         @else
-                            <a class="navbar-item" href="{{ url('/my-profile') }}">
-                                My Profile
+                            <a class="navbar-item" href="{{ url('/logout') }}">
+                                Logout
                             </a>
+                            <div class="navbar-item">
+                                <a class="button is-rounded" href="{{ url('/my-profile') }}">
+                                    My Profile
+                                </a>
+                            </div>
                         @endguest
                     </div>
                 </div>

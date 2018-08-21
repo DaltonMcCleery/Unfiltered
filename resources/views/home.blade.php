@@ -26,7 +26,7 @@
                             <p class="title" style="color: black;">No Censorship</p>
                             <div class="content">
                                 <p>
-                                    This is truly a unfiltered party game, where no word shall be censored
+                                    This is truly an unfiltered party game, where no word shall be censored
                                 </p>
                             </div>
                         </article>
