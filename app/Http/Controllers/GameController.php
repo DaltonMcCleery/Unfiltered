@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\joinLobby;
 use App\Games;
 use App\Http\Resources\GamesResource;
 use Illuminate\Http\Request;
@@ -9,6 +10,16 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('ninja');
+    }
+
     /**
      * Find or Create a New Game
      *
@@ -18,15 +29,27 @@ class GameController extends Controller
         return view('game.find');
     }
 
-    public function lobby(Games $session) {
+    /**
+     * Join a Game's Lobby
+     *
+     * @param $session_id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function lobby($session_id) {
+        // Get Game based on Session ID
+        $game = Games::where('session_id', $session_id)->first();
+
         // Check if the Game has started or not
-        if ($session->status === 1) {
+        if ($game->status === 1) {
             // Can't join game that is in progress
             return redirect('/play')->with('error', 'Cannot join a Game that is in progress!');
         }
 
         // Setup/Join Lobby
-        //todo
+        broadcast(new joinLobby(Auth::user(), $session_id));
+        return view('game.lobby', [
+            'session_id' => $session_id
+        ]);
     }
 
     /**
