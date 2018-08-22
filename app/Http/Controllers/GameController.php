@@ -37,7 +37,9 @@ class GameController extends Controller
      */
     public function lobby($session_id) {
         // Get Game based on Session ID
-        $game = Games::where('session_id', $session_id)->first();
+        $game = Games::with('Host')
+            ->where('session_id', $session_id)
+            ->first();
 
         // Check if the Game has started or not
         if ($game->status === 1) {
@@ -48,7 +50,7 @@ class GameController extends Controller
         // Setup/Join Lobby
         broadcast(new joinLobby(Auth::user(), $session_id));
         return view('game.lobby', [
-            'session_id' => $session_id
+            'game' => $game
         ]);
     }
 

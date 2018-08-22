@@ -10,7 +10,7 @@
                     </span>
                     LOBBY
                 </h2>
-                <lobby :current_ninja = "'{{ Auth::user()->username }}'" :session_id = "'{{ $session_id }}'"></lobby>
+                <lobby :current_ninja = "'{{ Auth::user()->username }}'" :game = "'{{ $game }}'"></lobby>
             </div>
         </div>
     </section>
