@@ -1,12 +1,47 @@
 <template>
 
     <div id="game_lobby">
-        <p>{{ count }} Users in Lobby</p>
-        <br>
-        <p style="color: dodgerblue;">"{{ current_ninja }}" (You)</p>
-        <p v-for="user in users">
-            "{{ user.username }}"
-        </p>
+
+        <nav class="panel is-dark">
+            <p class="panel-heading">
+                {{ count }} Users in Lobby
+            </p>
+            <!--<p class="panel-tabs">-->
+                <!--<a class="is-active">all</a>-->
+                <!--<a>public</a>-->
+                <!--<a>private</a>-->
+                <!--<a>sources</a>-->
+                <!--<a>forks</a>-->
+            <!--</p>-->
+            <div class="panel-block is-active" style="color: deepskyblue;">
+                "{{ current_ninja }}" (You)
+            </div>
+            <div class="panel-block" v-for="user in users" style="color: white">
+                "{{ user.username }}"
+                <span v-if="current_ninja === lobby_game.host.username">
+                    <a @click="kickPlayer(user)" class="button is-danger" style="color: white; margin-left: 10px;">
+                        Kick
+                    </a>
+                </span>
+            </div>
+            <!-- Host Options -->
+            <div class="panel-block" v-if="current_ninja === lobby_game.host.username">
+                <a @click="startGame" class="button is-success is-medium is-fullwidth">
+                    Start Game
+                </a>
+            </div>
+            <div class="panel-block" v-if="current_ninja === lobby_game.host.username">
+                <a @click="closeLobby" class="button is-danger is-outlined is-medium is-fullwidth">
+                    Close Lobby
+                </a>
+            </div>
+            <!-- Guest Options -->
+            <div class="panel-block" v-else>
+                <a @click="leaveLobby" class="button is-danger is-outlined is-medium is-fullwidth">
+                    Leave Lobby
+                </a>
+            </div>
+        </nav>
     </div>
 
 </template>
@@ -17,24 +52,26 @@
             return {
                 count: 1,
                 users: [],
+                lobby_game: {},
                 endpoint: "api/games/play"
             };
         },
 
         props: {
             current_ninja: String,
-            session_id: String
+            game: String
         },
 
         created() {
             this.fetch();
+            this.lobby_game = JSON.parse(this.game);
         },
 
         mounted() {
             // Outside access to Vue Data and Props
             let env = this;
 
-            Echo.join('lobby.'+this.session_id)
+            Echo.join('lobby.'+this.lobby_game.session_id)
                 .here((users) => {
                     // Loop through all current Lobby Users and display them for the newest User
                     users.forEach(function(user, index) {
@@ -49,16 +86,23 @@
 
                 })
                 .joining((user) => {
-                    console.log('joining');
-                    console.log(user);
+                    env.users.push({
+                        username: user.username
+                    });
 
-                    // Check if Lobby is now at Full capacity (don't let more people join)
+                    env.count = env.count + 1;
                 })
                 .leaving((user) => {
-                    console.log('leaving');
-                    console.log(user);
+                    this.users = _.remove(this.users, function(lobby_user) {
+                        return lobby_user.id !== user.id;
+                    });
+                    this.count = this.count - 1;
 
-                    // Check if Last User left (Destroy Lobby/Session)
+                    // Check if Last User left
+                    if (this.count === 0) {
+                        // Destroy Lobby/Session
+                        // todo
+                    }
                 })
                 .listen('joinLobby', (data) => {
                     // Push data to Lobby User list.
@@ -72,7 +116,7 @@
         },
 
         beforeDestroy() {
-            alert('no!')
+            Echo.leave('lobby.'+this.lobby_game.session_id);
         },
 
         methods: {
@@ -82,6 +126,41 @@
                 //     this.games = data.data;
                 //     this.count = this.games.length;
                 // });
+            },
+
+            kickPlayer(user) {
+                console.log('Kicking Player...');
+                console.log(user);
+
+                // Remove Player from Channel/Session
+                //todo
+
+                // Redirect Player to Find Game page
+                //todo
+            },
+
+            leaveLobby() {
+                console.log('Leaving Lobby...')
+                // Player has decided to leave the game
+                //todo
+            },
+
+            closeLobby() {
+                console.log('Closing Game...')
+                // Remove all current players from Channel
+                //todo
+
+                // Delete Game in DB
+                //todo
+
+                // Redirect all Players to the Find Game page
+                //todo
+            },
+
+            startGame() {
+                console.log('Starting Game...')
+
+                //todo
             }
         }
     };
