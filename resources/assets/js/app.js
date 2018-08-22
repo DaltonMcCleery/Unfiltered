@@ -35,6 +35,7 @@ Vue.use(Buefy);
 
 Vue.component('available-games', require('./components/AvailableGames.vue'));
 Vue.component('lobby', require('./components/Lobby.vue'));
+Vue.component('play-game', require('./components/PlayGame.vue'));
 
 const app = new Vue({
     el: '#app'
