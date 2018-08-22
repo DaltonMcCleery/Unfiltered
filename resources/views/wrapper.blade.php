@@ -51,6 +51,8 @@
                 </div>
             </nav>
 
+            @include('layout.flash_messages')
+
             @yield('content')
 
         </div>
