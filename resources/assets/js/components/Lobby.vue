@@ -4,7 +4,7 @@
 
         <nav class="panel is-dark">
             <p class="panel-heading">
-                {{ count }} Users in Lobby
+                {{ count }} Users in Lobby (of {{ lobby_game.max_sessions }})
             </p>
             <!--<p class="panel-tabs">-->
                 <!--<a class="is-active">all</a>-->
@@ -112,6 +112,11 @@
 
                     // Update Lobby Count
                     this.count = this.count + 1;
+                })
+                .listen('startGame', (data) => {
+                    alert(data);
+                    // Redirect the User to the Game's page
+                    window.location.href = '/play/game/'+this.lobby_game.session_id;
                 });
         },
 
@@ -158,9 +163,8 @@
             },
 
             startGame() {
-                console.log('Starting Game...')
-
-                //todo
+                console.log('Starting Game...');
+                window.location.href = '/play/game/'+this.lobby_game.session_id;
             }
         }
     };
