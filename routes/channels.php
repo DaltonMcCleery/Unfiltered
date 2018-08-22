@@ -1,5 +1,7 @@
 <?php
 
+use App\Broadcasting\LobbyChannel;
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -11,6 +13,6 @@
 |
 */
 
-Broadcast::channel('App.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
-});
+// ---> Broadcasting Events
+Broadcast::routes();
+Broadcast::channel('lobby.{session}', LobbyChannel::class);
