@@ -24,6 +24,7 @@ Route::middleware('ninja')->group(function () {
     Route::prefix('play')->group(function () {
         Route::get('/', 'GameController@index')->name('find.game');
         Route::get('/lobby/{session_id}', 'GameController@lobby')->name('game.lobby');
+        Route::get('/game/{session_id}', 'GameController@play')->name('play.game');
     });
     Route::post('create/game', 'GameController@createGame')->name('create.game');
 

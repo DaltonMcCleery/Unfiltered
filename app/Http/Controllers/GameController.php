@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\createGame;
 use App\Events\joinLobby;
 use App\Games;
 use App\Http\Resources\GamesResource;
@@ -95,6 +96,51 @@ class GameController extends Controller
             ->get();
 
         return GamesResource::collection($games);
+    }
+
+    /**
+     * Play a Game
+     *
+     * @param $session_id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function play($session_id) {
+        $game = Games::with('Host')
+            ->where('session_id', $session_id)
+            ->first();
+
+        if ($game->current_sessions < $game->max_sessions) {
+            if (Auth::user()->username === $game->Host->username) {
+                // Host starting Game
+                Games::where('id', $game->id)
+                    ->update([
+                        'status' => 1
+                    ]);
+
+                // Broadcast to all players in Lobby to go to the Game page
+                broadcast(new createGame(Auth::user(), $session_id));
+
+                return view('game.play', [
+                    'game' => $game
+                ]);
+
+            } else {
+                // Join Game
+                Games::where('id', $game->id)
+                    ->update([
+                        'current_sessions' => $game->current_sessions + 1
+                    ]);
+
+                return view('game.play', [
+                    'game' => $game
+                ]);
+            }
+
+        } else {
+            // Invalid Game
+            return redirect('/play')->with('error', 'That game is full or invalid!');
+        }
+
     }
 
     public function postQuestion(Request $request) {
