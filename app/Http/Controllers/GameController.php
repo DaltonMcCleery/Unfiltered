@@ -115,9 +115,6 @@ class GameController extends Controller
                         'status' => 1
                     ]);
 
-                // Broadcast to all players in Lobby to go to the Game page
-                broadcast(new startGame(Auth::user(), $session_id));
-
                 return view('game.play', [
                     'game' => $game
                 ]);
@@ -139,6 +136,16 @@ class GameController extends Controller
             return redirect('/play')->with('error', 'That game is full or invalid!');
         }
 
+    }
+
+    /**
+     * Send out the Start Game Event to the Lobby Channel
+     *
+     * @param Request $request
+     */
+    public function startGame(Request $request) {
+        // Broadcast to all players in Lobby to go to the Game page
+        broadcast(new startGame(Auth::user(), $request->session_id));
     }
 
     /**
