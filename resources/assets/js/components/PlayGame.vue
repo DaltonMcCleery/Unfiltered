@@ -42,6 +42,18 @@
                         "{{ question_ninja }}"
                     </h2>
                 </div>
+
+                <div v-if="timerObject">
+                    <br><br>
+                    <nav class="level is-mobile">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Time Remaing</p>
+                                <p class="title">{{ timer }} seconds...</p>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
             </div>
         </section>
 
@@ -118,16 +130,23 @@
     export default {
         data() {
             return {
+                // Game Users
                 count: 0,
                 users: [],
                 lobby_game: {},
+                // Game Timers
+                timerObject: null,
+                timer: 90,
+                // Game Question
                 question: null,
                 postedQuestion: null,
                 question_ninja: null,
+                // Game Answers
                 roundOver: false,
                 showAnswers: false,
                 canAnswer: false,
                 answers: [],
+                // API Endpoint
                 endpoint: "/api/game/"
             };
         },
@@ -202,6 +221,16 @@
                 }
             },
 
+            // Handle Timer countdowns for Answering Questions or finishing the Game
+            handleTimer() {
+                this.timer = this.timer - 1;
+
+                if (this.timer <= 0) {
+                    // Times up!
+                    this.pickWinner();
+                }
+            },
+
             // Leave the Game
             leaveGame() {
                 // User is leaving the Game
@@ -220,39 +249,64 @@
                     })
                     .then(({data}) => {
                         // Start Answer Timer
-                        // todo
+                        let env = this;
+                        this.timerObject = setInterval(function() { env.handleTimer() }, 1000);
                     });
             },
 
+            // A New Question has been submitted by the Question Ninja
             newQuestion(question) {
                 // Question Ninja submitted a Question
                 this.postedQuestion = question;
                 this.canAnswer = true;
 
                 // Start Answer Timer
-                // todo
+                let env = this;
+                this.timerObject = setInterval(function() { env.handleTimer() }, 1000);
             },
 
+            // Post your Answer to the submitted Question
             answerQuestion(answer) {
                 console.log(answer);
-                this.canAnswer = false;
 
-                //todo
+                // Send Request to update other player's games
+                axios.post(this.endpoint+'post-answer', {
+                        answer: answer,
+                        session_id: this.lobby_game.session_id
+                    })
+                    .then(({data}) => {
+                        // Hide Input form
+                        this.canAnswer = false;
+                    });
             },
 
+            // Question Ninja must pick a winning Ninja's Answer for the round
             pickWinner() {
-              // Check if all Ninja's have answered the question
-              this.roundOver = true;
+                // Check if all Ninja's have answered the question
+                this.roundOver = true;
 
                 // Stop Answer Timer
-                // todo
+                console.log('stopping timer!');
+                clearInterval(this.timerObject);
+                this.timerObject = null;
+
+                // Start Picking Timer
+                this.timer = 45;
+                let env = this;
+                this.timerObject = setInterval(function() { env.handleTimer() }, 1000);
             },
 
+            // Select a Ninja as the Round's Winner
             roundWinner(user) {
                 console.log('Won a Round');
                 console.log(user);
 
                 this.showAnswers = true;
+
+                // Stop Answer Timer
+                console.log('stopping timer!');
+                clearInterval(this.timerObject);
+                this.timerObject = null;
 
                 // Wait for a few seconds
                 //todo
@@ -270,6 +324,7 @@
                 //todo
             },
 
+            // Select a Ninja as the Match Winner
             matchWinner(user) {
                 console.log('WINNER!');
                 console.log(user)

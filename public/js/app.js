@@ -58462,20 +58462,39 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
+            // Game Users
             count: 0,
             users: [],
             lobby_game: {},
+            // Game Timers
+            timerObject: null,
+            timer: 90,
+            // Game Question
             question: null,
             postedQuestion: null,
             question_ninja: null,
+            // Game Answers
             roundOver: false,
             showAnswers: false,
             canAnswer: false,
             answers: [],
+            // API Endpoint
             endpoint: "/api/game/"
         };
     },
@@ -58547,6 +58566,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
 
+        // Handle Timer countdowns for Answering Questions or finishing the Game
+        handleTimer: function handleTimer() {
+            this.timer = this.timer - 1;
+
+            if (this.timer <= 0) {
+                // Times up!
+                this.pickWinner();
+            }
+        },
+
+
         // Leave the Game
         leaveGame: function leaveGame() {
             // User is leaving the Game
@@ -58556,6 +58586,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         // Question Ninja submits a new Question
         postQuestion: function postQuestion() {
+            var _this2 = this;
+
             // Disable the Question Ninja's Form
             this.postedQuestion = this.question;
 
@@ -58564,38 +58596,80 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 question: this.question,
                 session_id: this.lobby_game.session_id
             }).then(function (_ref) {
-                // Start Answer Timer
-                // todo
-
                 var data = _ref.data;
+
+                // Start Answer Timer
+                var env = _this2;
+                _this2.timerObject = setInterval(function () {
+                    env.handleTimer();
+                }, 1000);
             });
         },
+
+
+        // A New Question has been submitted by the Question Ninja
         newQuestion: function newQuestion(question) {
             // Question Ninja submitted a Question
             this.postedQuestion = question;
             this.canAnswer = true;
 
             // Start Answer Timer
-            // todo
+            var env = this;
+            this.timerObject = setInterval(function () {
+                env.handleTimer();
+            }, 1000);
         },
-        answerQuestion: function answerQuestion(answer) {
-            console.log(answer);
-            this.canAnswer = false;
 
-            //todo
+
+        // Post your Answer to the submitted Question
+        answerQuestion: function answerQuestion(answer) {
+            var _this3 = this;
+
+            console.log(answer);
+
+            // Send Request to update other player's games
+            axios.post(this.endpoint + 'post-answer', {
+                answer: answer,
+                session_id: this.lobby_game.session_id
+            }).then(function (_ref2) {
+                var data = _ref2.data;
+
+                // Hide Input form
+                _this3.canAnswer = false;
+            });
         },
+
+
+        // Question Ninja must pick a winning Ninja's Answer for the round
         pickWinner: function pickWinner() {
             // Check if all Ninja's have answered the question
             this.roundOver = true;
 
             // Stop Answer Timer
-            // todo
+            console.log('stopping timer!');
+            clearInterval(this.timerObject);
+            this.timerObject = null;
+
+            // Start Picking Timer
+            this.timer = 45;
+            var env = this;
+            this.timerObject = setInterval(function () {
+                env.handleTimer();
+            }, 1000);
         },
+
+
+        // Select a Ninja as the Round's Winner
         roundWinner: function roundWinner(user) {
             console.log('Won a Round');
             console.log(user);
 
             this.showAnswers = true;
+
+            // Stop Answer Timer
+            console.log('stopping timer!');
+            clearInterval(this.timerObject);
+            this.timerObject = null;
 
             // Wait for a few seconds
             //todo
@@ -58612,6 +58686,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Winner of Round becomes the Question Ninja
             //todo
         },
+
+
+        // Select a Ninja as the Match Winner
         matchWinner: function matchWinner(user) {
             console.log('WINNER!');
             console.log(user);
@@ -58732,7 +58809,28 @@ var render = function() {
                     '"\n                '
                 )
               ])
+            ]),
+        _vm._v(" "),
+        _vm.timerObject
+          ? _c("div", [
+              _c("br"),
+              _c("br"),
+              _vm._v(" "),
+              _c("nav", { staticClass: "level is-mobile" }, [
+                _c("div", { staticClass: "level-item has-text-centered" }, [
+                  _c("div", [
+                    _c("p", { staticClass: "heading" }, [
+                      _vm._v("Time Remaing")
+                    ]),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "title" }, [
+                      _vm._v(_vm._s(_vm.timer) + " seconds...")
+                    ])
+                  ])
+                ])
+              ])
             ])
+          : _vm._e()
       ])
     ]),
     _vm._v(" "),
