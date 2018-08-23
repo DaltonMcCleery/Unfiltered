@@ -11,6 +11,7 @@
 |
 */
 
+Route::redirect('/home', '/', 301);
 Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/how-to-play', function () {

@@ -42,7 +42,7 @@
                                 Logout
                             </a>
                             <div class="navbar-item">
-                                <a class="button is-rounded" href="{{ url('/my-profile') }}">
+                                <a class="button is-rounded is-info is-inverted" href="{{ url('/my-profile') }}">
                                     My Profile
                                 </a>
                             </div>
