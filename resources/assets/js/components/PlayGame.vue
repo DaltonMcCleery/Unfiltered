@@ -2,6 +2,18 @@
 
     <div id="play_game">
 
+        <!-- Match Winner -->
+        <section class="hero is-medium is-info is-bold" v-if="match_winner">
+            <div class="hero-body" align="center">
+                <div class="container">
+                    <h2 class="title">
+                        "{{ match_winner }}" is the Winner!
+                    </h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- Round Question -->
         <section class="hero is-medium is-info is-bold">
             <div class="hero-body">
 
@@ -11,6 +23,7 @@
                         <h2 class="title">
                             You are writing the Question!
                         </h2>
+                        <!-- Question Form -->
                         <form method="post" @submit.prevent="postQuestion">
                             <fieldset>
                                 <b-field label="Your Question">
@@ -23,6 +36,8 @@
                             </fieldset>
                         </form>
                     </div>
+
+                    <!-- Display new Question -->
                     <div v-else>
                         <h1 class="title">
                             {{ question }}
@@ -57,6 +72,7 @@
             </div>
         </section>
 
+        <!-- Answers -->
         <section class="hero is-dark is-bold">
             <div class="hero-body">
 
@@ -65,32 +81,34 @@
                     <div class="column" v-for="answer in answers">
                         <div class="card">
                             <header class="card-header">
-                                <p class="card-header-title">
-                                    NAME
+                                <p class="card-header-title" v-if="showAnswers">
+                                    {{ answer.username }}
                                 </p>
                             </header>
                             <div class="card-content">
                                 <div class="content">
-                                    ANSWER HERE
+                                    {{ answer.answer }}
                                 </div>
                             </div>
-                            <footer class="card-footer">
-                                <a href="#" class="card-footer-item">
-                                <span class="icon">
-                                    <i class="fas fa-thumbs-up"></i>
-                                </span>
-                                    Like
-                                </a>
-                                <a href="#" class="card-footer-item">
-                                <span class="icon">
-                                    <i class="fas fa-thumbs-down"></i>
-                                </span>
-                                    Dislike
-                                </a>
-                            </footer>
+                            <!--<footer class="card-footer">-->
+                                <!--<a href="#" class="card-footer-item">-->
+                                <!--<span class="icon">-->
+                                    <!--<i class="fas fa-thumbs-up"></i>-->
+                                <!--</span>-->
+                                    <!--Like-->
+                                <!--</a>-->
+                                <!--<a href="#" class="card-footer-item">-->
+                                <!--<span class="icon">-->
+                                    <!--<i class="fas fa-thumbs-down"></i>-->
+                                <!--</span>-->
+                                    <!--Dislike-->
+                                <!--</a>-->
+                            <!--</footer>-->
                         </div>
                     </div>
                 </div>
+
+                <!-- Question Ninja is waiting for answers -->
                 <div class="container" align="center" v-else>
                     <b-message type="is-info" has-icon>
                         Waiting on All Ninja's to answer...
@@ -134,6 +152,9 @@
                 count: 0,
                 users: [],
                 lobby_game: {},
+                // Game Settings
+                rounds_won: 0,
+                match_winner: null,
                 // Game Timers
                 timerObject: null,
                 timer: 90,
@@ -188,7 +209,9 @@
                         answer: data.answer
                     });
 
-                    if (data.last === true) {
+                    if (this.answers.length === (this.count - 1) ) {
+                        // All Users in the Lobby (except Question Ninja) have answered,
+                        // prompt Question Ninja to pick a Round Winner
                         this.pickWinner()
                     }
                 })
@@ -222,12 +245,17 @@
             },
 
             // Handle Timer countdowns for Answering Questions or finishing the Game
-            handleTimer() {
+            handleTimer(type) {
                 this.timer = this.timer - 1;
 
                 if (this.timer <= 0) {
                     // Times up!
-                    this.pickWinner();
+                    if (type === 'game') {
+                        this.pickWinner();
+                    } else { // type === 'exit'
+                        // Close Lobby and redirect All players to the homepage
+                        //todo
+                    }
                 }
             },
 
@@ -262,7 +290,7 @@
 
                 // Start Answer Timer
                 let env = this;
-                this.timerObject = setInterval(function() { env.handleTimer() }, 1000);
+                this.timerObject = setInterval(function() { env.handleTimer('game') }, 1000);
             },
 
             // Post your Answer to the submitted Question
@@ -293,28 +321,25 @@
                 // Start Picking Timer
                 this.timer = 45;
                 let env = this;
-                this.timerObject = setInterval(function() { env.handleTimer() }, 1000);
+                this.timerObject = setInterval(function() { env.handleTimer('game') }, 1000);
             },
 
             // Select a Ninja as the Round's Winner
-            roundWinner(user) {
-                console.log('Won a Round');
-                console.log(user);
-
-                this.showAnswers = true;
-
+            roundWinner(username) {
                 // Stop Answer Timer
                 console.log('stopping timer!');
                 clearInterval(this.timerObject);
                 this.timerObject = null;
 
+                this.showAnswers = true;
+                this.rounds_won = this.rounds_won + 1;
+
                 // Wait for a few seconds
                 //todo
 
                 // Check if User has won 3 rounds
-                let check = false; //temp
-                if (check === true) {
-                    this.matchWinner(user)
+                if (this.rounds_won === 3) {
+                    this.matchWinner(username)
                 }
 
                 // Clear Answers and Question
@@ -325,15 +350,13 @@
             },
 
             // Select a Ninja as the Match Winner
-            matchWinner(user) {
-                console.log('WINNER!');
-                console.log(user)
-
+            matchWinner(username) {
                 // Display Winner
-                //todo
+                this.match_winner = username;
 
                 // Start Exit Timer
-                //todo
+                let env = this;
+                this.timerObject = setInterval(function() { env.handleTimer('exit') }, 1000);
             }
         }
     };
