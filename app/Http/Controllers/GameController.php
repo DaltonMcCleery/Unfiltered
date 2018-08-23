@@ -149,6 +149,12 @@ class GameController extends Controller
     public function postQuestion(Request $request) {
         // Broadcast to all players in Lobby that a new Question has been submitted
         broadcast(new newQuestion($request->question, $request->session_id));
+
+        // Ensure the Game Status is now "locked"
+        $game = Games::where('session_id', $request->session_id);
+        if ($game->value('status') !== 1) {
+            $game->update(['status' => 1]);
+        }
     }
 
     /**
