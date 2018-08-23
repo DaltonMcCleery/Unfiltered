@@ -185,6 +185,9 @@ class GameController extends Controller
     public function decideMatchWinner(Request $request) {
         // Broadcast to all players in Lobby that a Ninja has answered a question
         broadcast(new matchWinner($request->username, $request->session_id));
+
+        // Update the Winning Ninja's stats
+        //todo
     }
 
 }

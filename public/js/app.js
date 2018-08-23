@@ -58707,10 +58707,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
 
             // Clear Answers and Question
-            //todo
+            this.answers = [];
+            this.question_ninja = username;
+            this.question = null;
+            this.postedQuestion = null;
 
             // Winner of Round becomes the Question Ninja
-            //todo
+            if (this.question_ninja === this.current_ninja) {
+                // Person Asking the Question
+                this.postedQuestion = null;
+            } else {
+                // Wait for Question to be submitted
+                this.question = 'Waiting on "' + this.question_ninja + '" to write a Question...';
+            }
         },
 
 
