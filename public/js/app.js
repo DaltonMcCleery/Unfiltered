@@ -58585,6 +58585,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // Wait for Question to be submitted
                 this.question = 'Waiting on "' + this.question_ninja + '" to write a Question...';
             }
+
+            // Start Question Timer
+            var env = this;
+            this.timerObject = setInterval(function () {
+                env.handleTimer('question');
+            }, 1000);
         },
 
 
@@ -58596,6 +58602,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // Times up!
                 if (type === 'game') {
                     this.pickWinner();
+                } else if (type === 'question') {
+                    this.postQuestion();
                 } else {// type === 'exit'
                     // Close Lobby and redirect All players to the homepage
                     //todo
@@ -58618,6 +58626,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Disable the Question Ninja's Form
             this.postedQuestion = this.question;
 
+            // Stop Question Timer
+            clearInterval(this.timerObject);
+            this.timerObject = null;
+
             // Send Request to update other player's games
             axios.post(this.endpoint + 'post-question', {
                 question: this.question,
@@ -58625,7 +58637,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }).then(function (_ref) {
                 var data = _ref.data;
 
+
                 // Start Answer Timer
+                _this2.timer = 90;
                 var env = _this2;
                 _this2.timerObject = setInterval(function () {
                     env.handleTimer();
@@ -58642,6 +58656,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 this.canAnswer = true;
 
                 // Start Answer Timer
+                this.timer = 90;
                 var env = this;
                 this.timerObject = setInterval(function () {
                     env.handleTimer('game');
@@ -58653,8 +58668,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         // Post your Answer to the submitted Question
         answerQuestion: function answerQuestion(answer) {
             var _this3 = this;
-
-            console.log(answer);
 
             // Send Request to update other player's games
             axios.post(this.endpoint + 'post-answer', {
@@ -58675,7 +58688,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.roundOver = true;
 
             // Stop Answer Timer
-            console.log('stopping timer!');
             clearInterval(this.timerObject);
             this.timerObject = null;
 
@@ -58691,7 +58703,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         // Select a Ninja as the Round's Winner
         roundWinner: function roundWinner(username) {
             // Stop Answer Timer
-            console.log('stopping timer!');
             clearInterval(this.timerObject);
             this.timerObject = null;
 
@@ -58720,6 +58731,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // Wait for Question to be submitted
                 this.question = 'Waiting on "' + this.question_ninja + '" to write a Question...';
             }
+
+            // Start Question Timer
+            this.timer = 90;
+            var env = this;
+            this.timerObject = setInterval(function () {
+                env.handleTimer('question');
+            }, 1000);
         },
 
 
@@ -58729,6 +58747,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.match_winner = username;
 
             // Start Exit Timer
+            this.timer = 100;
             var env = this;
             this.timerObject = setInterval(function () {
                 env.handleTimer('exit');
