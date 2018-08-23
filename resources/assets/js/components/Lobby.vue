@@ -53,7 +53,7 @@
                 count: 1,
                 users: [],
                 lobby_game: {},
-                endpoint: "api/games/play"
+                endpoint: "/api/game/start"
             };
         },
 
@@ -63,7 +63,6 @@
         },
 
         created() {
-            this.fetch();
             this.lobby_game = JSON.parse(this.game);
         },
 
@@ -104,17 +103,7 @@
                         // todo
                     }
                 })
-                .listen('joinLobby', (data) => {
-                    // Push data to Lobby User list.
-                    this.users.push({
-                        username: data.user.username
-                    });
-
-                    // Update Lobby Count
-                    this.count = this.count + 1;
-                })
                 .listen('startGame', (data) => {
-                    alert(data);
                     // Redirect the User to the Game's page
                     window.location.href = '/play/game/'+this.lobby_game.session_id;
                 });
@@ -125,13 +114,6 @@
         },
 
         methods: {
-            fetch() {
-                // Get available Games
-                // axios.get(this.endpoint).then(({ data }) => {
-                //     this.games = data.data;
-                //     this.count = this.games.length;
-                // });
-            },
 
             kickPlayer(user) {
                 console.log('Kicking Player...');
@@ -163,8 +145,12 @@
             },
 
             startGame() {
-                console.log('Starting Game...');
-                window.location.href = '/play/game/'+this.lobby_game.session_id;
+                axios.post(this.endpoint, {
+                        session_id: this.lobby_game.session_id
+                    })
+                    .then(({data}) => {
+                        console.log('Starting Game...')
+                    });
             }
         }
     };

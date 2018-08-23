@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 Route::middleware(['api'])->group(function () {
 
     Route::prefix('game')->group(function () {
+        Route::post('start', 'GameController@startGame');
         Route::post('post-question', 'GameController@postQuestion');
         Route::post('post-answer', 'GameController@postAnswer');
         Route::post('round-winner', 'GameController@decideRoundWinner');
