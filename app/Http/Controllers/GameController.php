@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\answerQuestion;
 use App\Events\createGame;
 use App\Events\joinLobby;
+use App\Events\matchWinner;
 use App\Events\newQuestion;
+use App\Events\roundWinner;
 use App\Games;
 use App\Http\Resources\GamesResource;
 use Illuminate\Http\Request;
@@ -144,16 +147,38 @@ class GameController extends Controller
      * @param Request $request
      */
     public function postQuestion(Request $request) {
-        // Broadcast to all players in Lobby to go to the Game page
+        // Broadcast to all players in Lobby that a new Question has been submitted
         broadcast(new newQuestion($request->question, $request->session_id));
     }
 
+    /**
+     * A Ninja has answered a submitted Question
+     *
+     * @param Request $request
+     */
     public function postAnswer(Request $request) {
-        //
+        // Broadcast to all players in Lobby that a Ninja has answered a question
+        broadcast(new answerQuestion($request->username, $request->answer, $request->session_id));
     }
 
-    public function decideWinner(Request $request) {
-        //
+    /**
+     * Alert all Ninjas in the Game which one of them won the Round
+     *
+     * @param Request $request
+     */
+    public function decideRoundWinner(Request $request) {
+        // Broadcast to all players in Lobby that a Ninja has answered a question
+        broadcast(new roundWinner($request->username, $request->session_id));
+    }
+
+    /**
+     * Alert all Ninjas in the Game which one of them have Won the Match
+     *
+     * @param Request $request
+     */
+    public function decideMatchWinner(Request $request) {
+        // Broadcast to all players in Lobby that a Ninja has answered a question
+        broadcast(new matchWinner($request->username, $request->session_id));
     }
 
 }
