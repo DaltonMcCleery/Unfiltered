@@ -58492,6 +58492,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58511,6 +58528,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             postedQuestion: null,
             question_ninja: null,
             // Game Answers
+            answer: null,
             roundOver: false,
             showAnswers: false,
             canAnswer: false,
@@ -58573,6 +58591,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     methods: {
+        // Initialize Game and starting Question Ninja
         start: function start() {
             // Pick which User goes First (Host)
             this.question_ninja = this.lobby_game.host.username;
@@ -58642,7 +58661,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this2.timer = 90;
                 var env = _this2;
                 _this2.timerObject = setInterval(function () {
-                    env.handleTimer();
+                    env.handleTimer('game');
                 }, 1000);
             });
         },
@@ -58666,12 +58685,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
         // Post your Answer to the submitted Question
-        answerQuestion: function answerQuestion(answer) {
+        answerQuestion: function answerQuestion() {
             var _this3 = this;
 
             // Send Request to update other player's games
             axios.post(this.endpoint + 'post-answer', {
-                answer: answer,
+                answer: this.answer,
                 session_id: this.lobby_game.session_id
             }).then(function (_ref2) {
                 var data = _ref2.data;
@@ -58690,13 +58709,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Stop Answer Timer
             clearInterval(this.timerObject);
             this.timerObject = null;
-
-            // Start Picking Timer
-            this.timer = 45;
-            var env = this;
-            this.timerObject = setInterval(function () {
-                env.handleTimer('game');
-            }, 1000);
         },
 
 
@@ -58954,6 +58966,66 @@ var render = function() {
               ],
               1
             ),
+        _vm._v(" "),
+        _vm.question_ninja !== _vm.current_ninja
+          ? _c("div", { staticClass: "container" }, [
+              _vm.canAnswer
+                ? _c("div", [
+                    _c(
+                      "form",
+                      {
+                        attrs: { method: "post" },
+                        on: {
+                          submit: function($event) {
+                            $event.preventDefault()
+                            return _vm.answerQuestion($event)
+                          }
+                        }
+                      },
+                      [
+                        _c(
+                          "fieldset",
+                          [
+                            _c(
+                              "b-field",
+                              { attrs: { label: "Your Answer" } },
+                              [
+                                _c("b-input", {
+                                  attrs: {
+                                    maxlength: "200",
+                                    type: "textarea",
+                                    placeholder:
+                                      "Write an unfiltered and hilarious answer to your Question Ninja!"
+                                  },
+                                  model: {
+                                    value: _vm.answer,
+                                    callback: function($$v) {
+                                      _vm.answer = $$v
+                                    },
+                                    expression: "answer"
+                                  }
+                                })
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass: "button is-medium is-success",
+                                attrs: { type: "submit" }
+                              },
+                              [_vm._v("Submit Answer")]
+                            )
+                          ],
+                          1
+                        )
+                      ]
+                    )
+                  ])
+                : _vm._e()
+            ])
+          : _vm._e(),
         _vm._v(" "),
         _c("hr"),
         _vm._v(" "),

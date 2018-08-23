@@ -115,6 +115,23 @@
                     </b-message>
                 </div>
 
+                <!-- Answering a Question -->
+                <div class="container" v-if="question_ninja !== current_ninja">
+                    <div v-if="canAnswer">
+                        <!-- Answer Form -->
+                        <form method="post" @submit.prevent="answerQuestion">
+                            <fieldset>
+                                <b-field label="Your Answer">
+                                    <b-input maxlength="200" type="textarea" v-model="answer"
+                                             placeholder="Write an unfiltered and hilarious answer to your Question Ninja!">
+                                    </b-input>
+                                </b-field>
+                                <button type="submit" class="button is-medium is-success">Submit Answer</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+
                 <hr>
 
                 <!-- Lobby List -->
@@ -163,6 +180,7 @@
                 postedQuestion: null,
                 question_ninja: null,
                 // Game Answers
+                answer: null,
                 roundOver: false,
                 showAnswers: false,
                 canAnswer: false,
@@ -229,6 +247,7 @@
         },
 
         methods: {
+            // Initialize Game and starting Question Ninja
             start() {
                 // Pick which User goes First (Host)
                 this.question_ninja = this.lobby_game.host.username;
@@ -292,7 +311,7 @@
                         this.timer = 90;
                         let env = this;
                         this.timerObject = setInterval(function() {
-                            env.handleTimer()
+                            env.handleTimer('game')
                         }, 1000);
                     });
             },
@@ -314,10 +333,10 @@
             },
 
             // Post your Answer to the submitted Question
-            answerQuestion(answer) {
+            answerQuestion() {
                 // Send Request to update other player's games
                 axios.post(this.endpoint+'post-answer', {
-                        answer: answer,
+                        answer: this.answer,
                         session_id: this.lobby_game.session_id
                     })
                     .then(({data}) => {
@@ -334,13 +353,6 @@
                 // Stop Answer Timer
                 clearInterval(this.timerObject);
                 this.timerObject = null;
-
-                // Start Picking Timer
-                this.timer = 45;
-                let env = this;
-                this.timerObject = setInterval(function() {
-                    env.handleTimer('game')
-                }, 1000);
             },
 
             // Select a Ninja as the Round's Winner
