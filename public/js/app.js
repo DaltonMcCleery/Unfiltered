@@ -58476,7 +58476,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             showAnswers: false,
             canAnswer: false,
             answers: [],
-            endpoint: "api/game/"
+            endpoint: "/api/game/"
         };
     },
 
@@ -58507,7 +58507,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }).leaving(function (user) {
             // todo
         }).listen('newQuestion', function (data) {
-            _this.newQuestion(data);
+            // this.newQuestion(data)
+            console.log(data);
         }).listen('answerQuestion', function (data) {
             env.answers.push({
                 username: data.username,
@@ -58544,25 +58545,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 this.question = 'Waiting on "' + this.question_ninja + '" to write a Question...';
             }
         },
+
+
+        // Leave the Game
         leaveGame: function leaveGame() {
             // User is leaving the Game
             //todo
         },
+
+
+        // Question Ninja submits a new Question
         postQuestion: function postQuestion() {
-            // Disable the QUestion Ninja's Form
+            // Disable the Question Ninja's Form
             this.postedQuestion = this.question;
 
             // Send Request to update other player's games
-            // axios.post('api/signatures', this.signature)
-            //     .then(({data}) => this.setSuccessMessage())
-            //     .catch(({response}) => this.setErrors(response));
+            axios.post(this.endpoint + 'post-question', {
+                question: this.question,
+                session_id: this.lobby_game.session_id
+            }).then(function (_ref) {
+                // Start Answer Timer
+                // todo
 
-            //todo
+                var data = _ref.data;
+            });
         },
         newQuestion: function newQuestion(question) {
             // Question Ninja submitted a Question
             this.postedQuestion = question;
             this.canAnswer = true;
+
+            // Start Answer Timer
+            // todo
         },
         answerQuestion: function answerQuestion(answer) {
             console.log(answer);
@@ -58573,6 +58587,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         pickWinner: function pickWinner() {
             // Check if all Ninja's have answered the question
             this.roundOver = true;
+
+            // Stop Answer Timer
+            // todo
         },
         roundWinner: function roundWinner(user) {
             console.log('Won a Round');
@@ -58599,6 +58616,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             console.log('WINNER!');
             console.log(user);
 
+            // Display Winner
+            //todo
+
+            // Start Exit Timer
             //todo
         }
     }
