@@ -1,6 +1,6 @@
 # Unfiltered Ninjas
 
-Description Here
+The hilarious, say-anything-you-want party game!
 
 - **No Censorship** (say *whatever* you want!)
 - **No Boundaries** (All subject matter and topic are welcome!)
