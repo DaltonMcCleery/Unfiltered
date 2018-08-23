@@ -58427,6 +58427,41 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58434,9 +58469,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             count: 0,
             users: [],
             lobby_game: {},
-            question: '',
+            question: null,
+            postedQuestion: null,
             question_ninja: null,
-            endpoint: "api/games/play"
+            roundOver: false,
+            showAnswers: false,
+            canAnswer: false,
+            answers: [],
+            endpoint: "api/game/"
         };
     },
 
@@ -58447,11 +58487,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     created: function created() {
-        this.lobby_game = JSON.parse(this.game);
-        this.start();
-    },
-    mounted: function mounted() {
         var _this = this;
+
+        this.lobby_game = JSON.parse(this.game);
 
         // Outside access to Vue Data and Props
         var env = this;
@@ -58468,11 +58506,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         }).leaving(function (user) {
             // todo
+        }).listen('newQuestion', function (data) {
+            _this.newQuestion(data);
+        }).listen('answerQuestion', function (data) {
+            env.answers.push({
+                username: data.username,
+                answer: data.answer
+            });
+
+            if (data.last === true) {
+                _this.pickWinner();
+            }
         }).listen('roundWinner', function (data) {
             _this.roundWinner(data);
         }).listen('matchWinner', function (data) {
             _this.matchWinner(data);
         });
+
+        this.start();
     },
     beforeDestroy: function beforeDestroy() {
         Echo.leave('lobby.' + this.lobby_game.session_id);
@@ -58481,31 +58532,62 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         start: function start() {
-            // Initialize and Start the Game
-            //todo
+            // Pick which User goes First (Host)
+            this.question_ninja = this.lobby_game.host.username;
 
-            // Pick which User goes First
-            // let random_number = _.random(0, this.users.length);
-            this.question_ninja = 'TODO';
-            this.question = 'Waiting on ' + this.question_ninja + ' to write a Question...';
+            // Initialize and Start the Game
+            if (this.question_ninja === this.current_ninja) {
+                // Person Asking the Question
+                this.postedQuestion = null;
+            } else {
+                // Wait for Question to be submitted
+                this.question = 'Waiting on "' + this.question_ninja + '" to write a Question...';
+            }
         },
         leaveGame: function leaveGame() {
             // User is leaving the Game
             //todo
         },
-        postQuestion: function postQuestion(question) {
-            console.log(question);
+        postQuestion: function postQuestion() {
+            // Disable the QUestion Ninja's Form
+            this.postedQuestion = this.question;
+
+            // Send Request to update other player's games
+            // axios.post('api/signatures', this.signature)
+            //     .then(({data}) => this.setSuccessMessage())
+            //     .catch(({response}) => this.setErrors(response));
 
             //todo
         },
+        newQuestion: function newQuestion(question) {
+            // Question Ninja submitted a Question
+            this.postedQuestion = question;
+            this.canAnswer = true;
+        },
         answerQuestion: function answerQuestion(answer) {
             console.log(answer);
+            this.canAnswer = false;
 
             //todo
+        },
+        pickWinner: function pickWinner() {
+            // Check if all Ninja's have answered the question
+            this.roundOver = true;
         },
         roundWinner: function roundWinner(user) {
             console.log('Won a Round');
             console.log(user);
+
+            this.showAnswers = true;
+
+            // Wait for a few seconds
+            //todo
+
+            // Check if User has won 3 rounds
+            var check = false; //temp
+            if (check === true) {
+                this.matchWinner(user);
+            }
 
             // Clear Answers and Question
             //todo
@@ -58533,29 +58615,132 @@ var render = function() {
   return _c("div", { attrs: { id: "play_game" } }, [
     _c("section", { staticClass: "hero is-medium is-info is-bold" }, [
       _c("div", { staticClass: "hero-body" }, [
-        _c("div", { staticClass: "container" }, [
-          _c("h1", { staticClass: "title" }, [
-            _vm._v(
-              "\n                    " +
-                _vm._s(_vm.question) +
-                "\n                "
-            )
-          ]),
-          _vm._v(" "),
-          _c("h2", { staticClass: "subtitle" }, [
-            _vm._v(
-              "\n                    " +
-                _vm._s(_vm.question_ninja) +
-                "\n                "
-            )
-          ])
-        ])
+        _vm.question_ninja === _vm.current_ninja
+          ? _c("div", { staticClass: "container" }, [
+              _vm.postedQuestion === null
+                ? _c("div", [
+                    _c("h2", { staticClass: "title" }, [
+                      _vm._v(
+                        "\n                        You are writing the Question!\n                    "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "form",
+                      {
+                        attrs: { method: "post" },
+                        on: {
+                          submit: function($event) {
+                            $event.preventDefault()
+                            return _vm.postQuestion($event)
+                          }
+                        }
+                      },
+                      [
+                        _c(
+                          "fieldset",
+                          [
+                            _c(
+                              "b-field",
+                              { attrs: { label: "Your Question" } },
+                              [
+                                _c("b-input", {
+                                  attrs: {
+                                    maxlength: "200",
+                                    type: "textarea",
+                                    placeholder:
+                                      "Write out a funny, witty, or outrageous question for your fellow Ninjas to answer!"
+                                  },
+                                  model: {
+                                    value: _vm.question,
+                                    callback: function($$v) {
+                                      _vm.question = $$v
+                                    },
+                                    expression: "question"
+                                  }
+                                })
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass: "button is-medium is-success",
+                                attrs: { type: "submit" }
+                              },
+                              [_vm._v("Submit Question")]
+                            )
+                          ],
+                          1
+                        )
+                      ]
+                    )
+                  ])
+                : _c("div", [
+                    _c("h1", { staticClass: "title" }, [
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(_vm.question) +
+                          "\n                    "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("h2", { staticClass: "subtitle" }, [
+                      _vm._v(
+                        '\n                        "' +
+                          _vm._s(_vm.question_ninja) +
+                          '"\n                    '
+                      )
+                    ])
+                  ])
+            ])
+          : _c("div", { staticClass: "container" }, [
+              _c("h1", { staticClass: "title" }, [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(_vm.question) +
+                    "\n                "
+                )
+              ]),
+              _vm._v(" "),
+              _c("h2", { staticClass: "subtitle" }, [
+                _vm._v(
+                  '\n                    "' +
+                    _vm._s(_vm.question_ninja) +
+                    '"\n                '
+                )
+              ])
+            ])
       ])
     ]),
     _vm._v(" "),
     _c("section", { staticClass: "hero is-dark is-bold" }, [
       _c("div", { staticClass: "hero-body" }, [
-        _vm._m(0),
+        _vm.roundOver
+          ? _c(
+              "div",
+              { staticClass: "columns container is-fluid" },
+              _vm._l(_vm.answers, function(answer) {
+                return _c("div", { staticClass: "column" }, [_vm._m(0, true)])
+              })
+            )
+          : _c(
+              "div",
+              { staticClass: "container", attrs: { align: "center" } },
+              [
+                _c(
+                  "b-message",
+                  { attrs: { type: "is-info", "has-icon": "" } },
+                  [
+                    _vm._v(
+                      "\n                    Waiting on All Ninja's to answer...\n                "
+                    )
+                  ]
+                )
+              ],
+              1
+            ),
         _vm._v(" "),
         _c("hr"),
         _vm._v(" "),
@@ -58618,44 +58803,40 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "columns container is-fluid" }, [
-      _c("div", { staticClass: "column" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("header", { staticClass: "card-header" }, [
-            _c("p", { staticClass: "card-header-title" }, [
-              _vm._v(
-                "\n                                NAME\n                            "
-              )
-            ])
+    return _c("div", { staticClass: "card" }, [
+      _c("header", { staticClass: "card-header" }, [
+        _c("p", { staticClass: "card-header-title" }, [
+          _vm._v(
+            "\n                                NAME\n                            "
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card-content" }, [
+        _c("div", { staticClass: "content" }, [
+          _vm._v(
+            "\n                                ANSWER HERE\n                            "
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("footer", { staticClass: "card-footer" }, [
+        _c("a", { staticClass: "card-footer-item", attrs: { href: "#" } }, [
+          _c("span", { staticClass: "icon" }, [
+            _c("i", { staticClass: "fas fa-thumbs-up" })
           ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-content" }, [
-            _c("div", { staticClass: "content" }, [
-              _vm._v(
-                "\n                                ANSWER HERE\n                            "
-              )
-            ])
+          _vm._v(
+            "\n                                Like\n                            "
+          )
+        ]),
+        _vm._v(" "),
+        _c("a", { staticClass: "card-footer-item", attrs: { href: "#" } }, [
+          _c("span", { staticClass: "icon" }, [
+            _c("i", { staticClass: "fas fa-thumbs-down" })
           ]),
-          _vm._v(" "),
-          _c("footer", { staticClass: "card-footer" }, [
-            _c("a", { staticClass: "card-footer-item", attrs: { href: "#" } }, [
-              _c("span", { staticClass: "icon" }, [
-                _c("i", { staticClass: "fas fa-thumbs-up" })
-              ]),
-              _vm._v(
-                "\n                                Like\n                            "
-              )
-            ]),
-            _vm._v(" "),
-            _c("a", { staticClass: "card-footer-item", attrs: { href: "#" } }, [
-              _c("span", { staticClass: "icon" }, [
-                _c("i", { staticClass: "fas fa-thumbs-down" })
-              ]),
-              _vm._v(
-                "\n                                Dislike\n                            "
-              )
-            ])
-          ])
+          _vm._v(
+            "\n                                Dislike\n                            "
+          )
         ])
       ])
     ])
