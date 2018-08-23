@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\answerQuestion;
-use App\Events\createGame;
+use App\Events\startGame;
 use App\Events\joinLobby;
 use App\Events\matchWinner;
 use App\Events\newQuestion;
@@ -107,7 +107,7 @@ class GameController extends Controller
         // Check if Game exists
         //todo
 
-        if ($game->current_sessions < $game->max_sessions) {
+        if ($game->current_sessions <= $game->max_sessions) {
             if (Auth::user()->username === $game->Host->username) {
                 // Host starting Game
                 Games::where('id', $game->id)
@@ -116,7 +116,7 @@ class GameController extends Controller
                     ]);
 
                 // Broadcast to all players in Lobby to go to the Game page
-                broadcast(new createGame(Auth::user(), $session_id));
+                broadcast(new startGame(Auth::user(), $session_id));
 
                 return view('game.play', [
                     'game' => $game
