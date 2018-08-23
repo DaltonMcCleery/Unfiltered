@@ -58474,6 +58474,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58482,6 +58500,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             count: 0,
             users: [],
             lobby_game: {},
+            // Game Settings
+            rounds_won: 0,
+            match_winner: null,
             // Game Timers
             timerObject: null,
             timer: 90,
@@ -58526,15 +58547,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }).leaving(function (user) {
             // todo
         }).listen('newQuestion', function (data) {
-            // this.newQuestion(data)
-            console.log(data);
+            _this.newQuestion(data);
         }).listen('answerQuestion', function (data) {
             env.answers.push({
                 username: data.username,
                 answer: data.answer
             });
 
-            if (data.last === true) {
+            if (_this.answers.length === _this.count - 1) {
+                // All Users in the Lobby (except Question Ninja) have answered,
+                // prompt Question Ninja to pick a Round Winner
                 _this.pickWinner();
             }
         }).listen('roundWinner', function (data) {
@@ -58567,12 +58589,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
         // Handle Timer countdowns for Answering Questions or finishing the Game
-        handleTimer: function handleTimer() {
+        handleTimer: function handleTimer(type) {
             this.timer = this.timer - 1;
 
             if (this.timer <= 0) {
                 // Times up!
-                this.pickWinner();
+                if (type === 'game') {
+                    this.pickWinner();
+                } else {// type === 'exit'
+                    // Close Lobby and redirect All players to the homepage
+                    //todo
+                }
             }
         },
 
@@ -58609,15 +58636,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         // A New Question has been submitted by the Question Ninja
         newQuestion: function newQuestion(question) {
-            // Question Ninja submitted a Question
-            this.postedQuestion = question;
-            this.canAnswer = true;
+            if (this.question_ninja !== this.current_ninja) {
+                // Question Ninja submitted a Question
+                this.postedQuestion = question;
+                this.canAnswer = true;
 
-            // Start Answer Timer
-            var env = this;
-            this.timerObject = setInterval(function () {
-                env.handleTimer();
-            }, 1000);
+                // Start Answer Timer
+                var env = this;
+                this.timerObject = setInterval(function () {
+                    env.handleTimer('game');
+                }, 1000);
+            }
         },
 
 
@@ -58654,30 +58683,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.timer = 45;
             var env = this;
             this.timerObject = setInterval(function () {
-                env.handleTimer();
+                env.handleTimer('game');
             }, 1000);
         },
 
 
         // Select a Ninja as the Round's Winner
-        roundWinner: function roundWinner(user) {
-            console.log('Won a Round');
-            console.log(user);
-
-            this.showAnswers = true;
-
+        roundWinner: function roundWinner(username) {
             // Stop Answer Timer
             console.log('stopping timer!');
             clearInterval(this.timerObject);
             this.timerObject = null;
 
+            this.showAnswers = true;
+            this.rounds_won = this.rounds_won + 1;
+
             // Wait for a few seconds
             //todo
 
             // Check if User has won 3 rounds
-            var check = false; //temp
-            if (check === true) {
-                this.matchWinner(user);
+            if (this.rounds_won === 3) {
+                this.matchWinner(username);
             }
 
             // Clear Answers and Question
@@ -58689,15 +58715,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
         // Select a Ninja as the Match Winner
-        matchWinner: function matchWinner(user) {
-            console.log('WINNER!');
-            console.log(user);
-
+        matchWinner: function matchWinner(username) {
             // Display Winner
-            //todo
+            this.match_winner = username;
 
             // Start Exit Timer
-            //todo
+            var env = this;
+            this.timerObject = setInterval(function () {
+                env.handleTimer('exit');
+            }, 1000);
         }
     }
 });
@@ -58711,6 +58737,22 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { attrs: { id: "play_game" } }, [
+    _vm.match_winner
+      ? _c("section", { staticClass: "hero is-medium is-info is-bold" }, [
+          _c("div", { staticClass: "hero-body", attrs: { align: "center" } }, [
+            _c("div", { staticClass: "container" }, [
+              _c("h2", { staticClass: "title" }, [
+                _vm._v(
+                  '\n                    "' +
+                    _vm._s(_vm.match_winner) +
+                    '" is the Winner!\n                '
+                )
+              ])
+            ])
+          ])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
     _c("section", { staticClass: "hero is-medium is-info is-bold" }, [
       _c("div", { staticClass: "hero-body" }, [
         _vm.question_ninja === _vm.current_ninja
@@ -58841,7 +58883,31 @@ var render = function() {
               "div",
               { staticClass: "columns container is-fluid" },
               _vm._l(_vm.answers, function(answer) {
-                return _c("div", { staticClass: "column" }, [_vm._m(0, true)])
+                return _c("div", { staticClass: "column" }, [
+                  _c("div", { staticClass: "card" }, [
+                    _c("header", { staticClass: "card-header" }, [
+                      _vm.showAnswers
+                        ? _c("p", { staticClass: "card-header-title" }, [
+                            _vm._v(
+                              "\n                                " +
+                                _vm._s(answer.username) +
+                                "\n                            "
+                            )
+                          ])
+                        : _vm._e()
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "card-content" }, [
+                      _c("div", { staticClass: "content" }, [
+                        _vm._v(
+                          "\n                                " +
+                            _vm._s(answer.answer) +
+                            "\n                            "
+                        )
+                      ])
+                    ])
+                  ])
+                ])
               })
             )
           : _c(
@@ -58917,50 +58983,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card" }, [
-      _c("header", { staticClass: "card-header" }, [
-        _c("p", { staticClass: "card-header-title" }, [
-          _vm._v(
-            "\n                                NAME\n                            "
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "card-content" }, [
-        _c("div", { staticClass: "content" }, [
-          _vm._v(
-            "\n                                ANSWER HERE\n                            "
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("footer", { staticClass: "card-footer" }, [
-        _c("a", { staticClass: "card-footer-item", attrs: { href: "#" } }, [
-          _c("span", { staticClass: "icon" }, [
-            _c("i", { staticClass: "fas fa-thumbs-up" })
-          ]),
-          _vm._v(
-            "\n                                Like\n                            "
-          )
-        ]),
-        _vm._v(" "),
-        _c("a", { staticClass: "card-footer-item", attrs: { href: "#" } }, [
-          _c("span", { staticClass: "icon" }, [
-            _c("i", { staticClass: "fas fa-thumbs-down" })
-          ]),
-          _vm._v(
-            "\n                                Dislike\n                            "
-          )
-        ])
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {

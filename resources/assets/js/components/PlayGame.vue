@@ -200,8 +200,7 @@
                     // todo
                 })
                 .listen('newQuestion', (data) => {
-                    // this.newQuestion(data)
-                    console.log(data);
+                    this.newQuestion(data)
                 })
                 .listen('answerQuestion', (data) => {
                     env.answers.push({
@@ -278,19 +277,25 @@
                     .then(({data}) => {
                         // Start Answer Timer
                         let env = this;
-                        this.timerObject = setInterval(function() { env.handleTimer() }, 1000);
+                        this.timerObject = setInterval(function() {
+                            env.handleTimer()
+                        }, 1000);
                     });
             },
 
             // A New Question has been submitted by the Question Ninja
             newQuestion(question) {
-                // Question Ninja submitted a Question
-                this.postedQuestion = question;
-                this.canAnswer = true;
+                if (this.question_ninja !== this.current_ninja) {
+                    // Question Ninja submitted a Question
+                    this.postedQuestion = question;
+                    this.canAnswer = true;
 
-                // Start Answer Timer
-                let env = this;
-                this.timerObject = setInterval(function() { env.handleTimer('game') }, 1000);
+                    // Start Answer Timer
+                    let env = this;
+                    this.timerObject = setInterval(function () {
+                        env.handleTimer('game')
+                    }, 1000);
+                }
             },
 
             // Post your Answer to the submitted Question
@@ -321,7 +326,9 @@
                 // Start Picking Timer
                 this.timer = 45;
                 let env = this;
-                this.timerObject = setInterval(function() { env.handleTimer('game') }, 1000);
+                this.timerObject = setInterval(function() {
+                    env.handleTimer('game')
+                }, 1000);
             },
 
             // Select a Ninja as the Round's Winner
