@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\createGame;
 use App\Events\joinLobby;
+use App\Events\newQuestion;
 use App\Games;
 use App\Http\Resources\GamesResource;
 use Illuminate\Http\Request;
@@ -100,6 +101,9 @@ class GameController extends Controller
             ->where('session_id', $session_id)
             ->first();
 
+        // Check if Game exists
+        //todo
+
         if ($game->current_sessions < $game->max_sessions) {
             if (Auth::user()->username === $game->Host->username) {
                 // Host starting Game
@@ -134,8 +138,14 @@ class GameController extends Controller
 
     }
 
+    /**
+     * Question Ninja has submitted a New Question to a Game
+     *
+     * @param Request $request
+     */
     public function postQuestion(Request $request) {
-        //
+        // Broadcast to all players in Lobby to go to the Game page
+        broadcast(new newQuestion($request->question, $request->session_id));
     }
 
     public function postAnswer(Request $request) {

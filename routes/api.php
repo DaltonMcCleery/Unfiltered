@@ -15,8 +15,10 @@ use Illuminate\Http\Request;
 
 // --- Authenticated Customer --- //
 Route::middleware(['api'])->group(function () {
-    Route::resource('game', 'GameController')
-        ->only(['postQuestion', 'postAnswer', 'decideWinner']);
+
+    Route::prefix('game')->group(function () {
+        Route::post('post-question', 'GameController@postQuestion');
+    });
 
     Route::get('find/games', 'GameController@find');
 });
