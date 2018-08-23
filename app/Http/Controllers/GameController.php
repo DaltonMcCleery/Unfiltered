@@ -11,15 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('ninja');
-    }
 
     /**
      * Find or Create a New Game

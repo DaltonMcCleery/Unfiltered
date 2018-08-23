@@ -57806,7 +57806,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             games: null,
             count: 0,
-            endpoint: "api/games/find"
+            endpoint: "api/find/games"
         };
     },
 
@@ -58447,8 +58447,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     created: function created() {
-        this.start();
         this.lobby_game = JSON.parse(this.game);
+        this.start();
     },
     mounted: function mounted() {
         var _this = this;
@@ -58460,6 +58460,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Loop through all current Lobby Users and display them for the newest User
             users.forEach(function (user, index) {
                 env.users.push({
+                    id: user.id,
                     username: user.username
                 });
 
@@ -58483,12 +58484,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Initialize and Start the Game
             //todo
 
-            console.log(this.users);
-            console.log(this.users[0]);
-
             // Pick which User goes First
-            var random_number = _.random(0, this.users.length);
-            this.question_ninja = this.users[random_number];
+            // let random_number = _.random(0, this.users.length);
+            this.question_ninja = 'TODO';
             this.question = 'Waiting on ' + this.question_ninja + ' to write a Question...';
         },
         leaveGame: function leaveGame() {

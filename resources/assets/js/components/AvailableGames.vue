@@ -63,7 +63,7 @@
             return {
                 games: null,
                 count: 0,
-                endpoint: "api/games/find"
+                endpoint: "api/find/games"
             };
         },
 
