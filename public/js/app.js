@@ -58553,7 +58553,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }).leaving(function (user) {
             // todo
         }).listen('newQuestion', function (data) {
-            _this.newQuestion(data);
+            _this.newQuestion(data.question);
         }).listen('answerQuestion', function (data) {
             env.answers.push({
                 username: data.username,
@@ -58659,7 +58659,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         newQuestion: function newQuestion(question) {
             if (this.question_ninja !== this.current_ninja) {
                 // Question Ninja submitted a Question
-                this.postedQuestion = question;
+                this.question = question;
                 this.canAnswer = true;
 
                 // Start Answer Timer

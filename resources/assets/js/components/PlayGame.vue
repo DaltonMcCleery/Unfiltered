@@ -218,7 +218,7 @@
                     // todo
                 })
                 .listen('newQuestion', (data) => {
-                    this.newQuestion(data)
+                    this.newQuestion(data.question)
                 })
                 .listen('answerQuestion', (data) => {
                     env.answers.push({
@@ -320,7 +320,7 @@
             newQuestion(question) {
                 if (this.question_ninja !== this.current_ninja) {
                     // Question Ninja submitted a Question
-                    this.postedQuestion = question;
+                    this.question = question;
                     this.canAnswer = true;
 
                     // Start Answer Timer
