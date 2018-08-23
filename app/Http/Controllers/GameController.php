@@ -34,20 +34,27 @@ class GameController extends Controller
     public function lobby($session_id) {
         // Get Game based on Session ID
         $game = Games::with('Host')
-            ->where('session_id', $session_id)
-            ->first();
+            ->where('session_id', $session_id);
 
-        // Check if the Game has started or not
-        if ($game->status === 1) {
-            // Can't join game that is in progress
-            return redirect('/play')->with('error', 'Cannot join a Game that is in progress!');
+        if ($game->exists()) {
+            // Get Game settings
+            $game = $game->first();
+
+            // Check if the Game has started or not
+            if ($game->status === 1) {
+                // Can't join game that is in progress
+                return redirect('/play')->with('error', 'Cannot join a Game that is in progress!');
+            }
+
+            // Setup/Join Lobby
+            broadcast(new joinLobby(Auth::user(), $session_id));
+            return view('game.lobby', [
+                'game' => $game
+            ]);
+        } else {
+            // No Game found
+            return redirect('/play')->with('error', 'That game is full or invalid!');
         }
-
-        // Setup/Join Lobby
-        broadcast(new joinLobby(Auth::user(), $session_id));
-        return view('game.lobby', [
-            'game' => $game
-        ]);
     }
 
     /**
