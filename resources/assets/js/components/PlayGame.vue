@@ -140,7 +140,7 @@
                             <!-- Answer Form -->
                             <form method="post" @submit.prevent="answerQuestion">
                                 <fieldset>
-                                    <b-field label="Your Answer">
+                                    <b-field label="Your Answer" style="color: white">
                                         <b-input maxlength="200" type="textarea" v-model="answer"
                                                  placeholder="Write an unfiltered and hilarious answer to your Question Ninja!">
                                         </b-input>
@@ -155,29 +155,28 @@
             </section>
         </div>
 
-        <hr>
-
         <!-- Lobby List -->
         <section class="hero is-dark is-bold">
             <div class="hero-body">
+                <hr>
                 <nav class="panel is-dark container">
-            <p class="panel-heading">
-                {{ count }} Users in Game
-            </p>
-            <div class="panel-block" v-for="user in users">
-                <span v-if="current_ninja === user.username" style="color: deepskyblue;">
-                    "{{ user.username }}" (You)
-                </span>
-                <span v-else style="color: white;">
-                    "{{ user.username }}"
-                </span>
-            </div>
-            <div class="panel-block">
-                <a @click="leaveGame" class="button is-danger is-outlined is-medium is-fullwidth">
-                    Leave Lobby
-                </a>
-            </div>
-        </nav>
+                    <p class="panel-heading">
+                        {{ count }} Users in Game
+                    </p>
+                    <div class="panel-block" v-for="user in users">
+                        <span v-if="current_ninja === user.username" style="color: deepskyblue;">
+                            "{{ user.username }}" (You)
+                        </span>
+                        <span v-else style="color: white;">
+                            "{{ user.username }}"
+                        </span>
+                    </div>
+                    <div class="panel-block">
+                        <a @click="leaveGame" class="button is-danger is-outlined is-medium is-fullwidth">
+                            Leave Lobby
+                        </a>
+                    </div>
+                </nav>
             </div>
         </section>
 
@@ -220,6 +219,7 @@
             game: String
         },
 
+        // Initialize Game Settings and Event Listeners
         created() {
             this.lobby_game = JSON.parse(this.game);
 
@@ -273,6 +273,7 @@
             this.start();
         },
 
+        // Leave Lobby Event Channel before the Vue Component is destroyed
         beforeDestroy() {
             Echo.leave('lobby.'+this.lobby_game.session_id);
         },
@@ -467,6 +468,9 @@
             matchWinner(username) {
                 // Display Winner
                 this.match_winner = username;
+
+                // Stop any Timer
+                // clearInterval(this.timerObject);
 
                 // Start Exit Timer
                 this.timer = 100;

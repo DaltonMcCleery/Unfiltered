@@ -58521,7 +58521,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58558,6 +58557,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         game: String
     },
 
+    // Initialize Game Settings and Event Listeners
     created: function created() {
         var _this = this;
 
@@ -58604,6 +58604,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         this.start();
     },
+
+
+    // Leave Lobby Event Channel before the Vue Component is destroyed
     beforeDestroy: function beforeDestroy() {
         Echo.leave('lobby.' + this.lobby_game.session_id);
     },
@@ -58817,6 +58820,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         matchWinner: function matchWinner(username) {
             // Display Winner
             this.match_winner = username;
+
+            // Stop any Timer
+            // clearInterval(this.timerObject);
 
             // Start Exit Timer
             this.timer = 100;
@@ -59121,7 +59127,10 @@ var render = function() {
                                 [
                                   _c(
                                     "b-field",
-                                    { attrs: { label: "Your Answer" } },
+                                    {
+                                      staticStyle: { color: "white" },
+                                      attrs: { label: "Your Answer" }
+                                    },
                                     [
                                       _c("b-input", {
                                         attrs: {
@@ -59164,19 +59173,19 @@ var render = function() {
           ])
         ]),
     _vm._v(" "),
-    _c("hr"),
-    _vm._v(" "),
     _c("section", { staticClass: "hero is-dark is-bold" }, [
       _c("div", { staticClass: "hero-body" }, [
+        _c("hr"),
+        _vm._v(" "),
         _c(
           "nav",
           { staticClass: "panel is-dark container" },
           [
             _c("p", { staticClass: "panel-heading" }, [
               _vm._v(
-                "\n            " +
+                "\n                    " +
                   _vm._s(_vm.count) +
-                  " Users in Game\n        "
+                  " Users in Game\n                "
               )
             ]),
             _vm._v(" "),
@@ -59185,16 +59194,16 @@ var render = function() {
                 _vm.current_ninja === user.username
                   ? _c("span", { staticStyle: { color: "deepskyblue" } }, [
                       _vm._v(
-                        '\n                "' +
+                        '\n                        "' +
                           _vm._s(user.username) +
-                          '" (You)\n            '
+                          '" (You)\n                    '
                       )
                     ])
                   : _c("span", { staticStyle: { color: "white" } }, [
                       _vm._v(
-                        '\n                "' +
+                        '\n                        "' +
                           _vm._s(user.username) +
-                          '"\n            '
+                          '"\n                    '
                       )
                     ])
               ])
@@ -59208,7 +59217,11 @@ var render = function() {
                     "button is-danger is-outlined is-medium is-fullwidth",
                   on: { click: _vm.leaveGame }
                 },
-                [_vm._v("\n                Leave Lobby\n            ")]
+                [
+                  _vm._v(
+                    "\n                        Leave Lobby\n                    "
+                  )
+                ]
               )
             ])
           ],
