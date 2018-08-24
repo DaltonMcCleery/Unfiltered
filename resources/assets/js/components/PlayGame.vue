@@ -74,6 +74,16 @@
                 </div>
             </section>
 
+            <section class="hero is-danger" v-if="round_winner">
+                <div class="hero-body">
+                    <div class="container">
+                        <h1 class="title">
+                            Round Winner: "{{ round_winner }}"
+                        </h1>
+                    </div>
+                </div>
+            </section>
+
             <!-- Answers -->
             <section class="hero is-dark is-bold">
                 <div class="hero-body">
@@ -168,6 +178,7 @@
                 lobby_game: {},
                 // Game Settings
                 rounds_won: 0,
+                round_winner: null,
                 match_winner: null,
                 // Game Timers
                 timerObject: null,
@@ -368,6 +379,10 @@
             roundWinner(username) {
                 // Stop Answer Timer
                 clearInterval(this.timerObject);
+
+                // Display Round Winner to everyone
+                this.round_winner = username;
+
                 // Clear Timer and show all Answers
                 this.timerObject = null;
                 this.showAnswers = true;
@@ -399,6 +414,7 @@
                 this.roundOver = false;
                 this.showAnswers = false;
                 this.canAnswer = false;
+                this.round_winner = null;
 
                 // Winner of Round becomes the Question Ninja
                 if (this.question_ninja === this.current_ninja) {

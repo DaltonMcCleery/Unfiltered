@@ -58495,6 +58495,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58505,6 +58515,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             lobby_game: {},
             // Game Settings
             rounds_won: 0,
+            round_winner: null,
             match_winner: null,
             // Game Timers
             timerObject: null,
@@ -58716,6 +58727,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         roundWinner: function roundWinner(username) {
             // Stop Answer Timer
             clearInterval(this.timerObject);
+
+            // Display Round Winner to everyone
+            this.round_winner = username;
+
             // Clear Timer and show all Answers
             this.timerObject = null;
             this.showAnswers = true;
@@ -58748,6 +58763,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.roundOver = false;
             this.showAnswers = false;
             this.canAnswer = false;
+            this.round_winner = null;
 
             // Winner of Round becomes the Question Ninja
             if (this.question_ninja === this.current_ninja) {
@@ -58933,6 +58949,22 @@ var render = function() {
                 : _vm._e()
             ])
           ]),
+          _vm._v(" "),
+          _vm.round_winner
+            ? _c("section", { staticClass: "hero is-danger" }, [
+                _c("div", { staticClass: "hero-body" }, [
+                  _c("div", { staticClass: "container" }, [
+                    _c("h1", { staticClass: "title" }, [
+                      _vm._v(
+                        '\n                        Round Winner: "' +
+                          _vm._s(_vm.round_winner) +
+                          '"\n                    '
+                      )
+                    ])
+                  ])
+                ])
+              ])
+            : _vm._e(),
           _vm._v(" "),
           _c("section", { staticClass: "hero is-dark is-bold" }, [
             _c("div", { staticClass: "hero-body" }, [
