@@ -3,7 +3,7 @@
     <div id="play_game">
 
         <!-- Match Winner -->
-        <section class="hero is-medium is-info is-bold" v-if="match_winner">
+        <section class="hero is-medium is-success is-bold" v-if="match_winner">
             <div class="hero-body" align="center">
                 <div class="container">
                     <h2 class="title">
@@ -13,32 +13,45 @@
             </div>
         </section>
 
-        <!-- Round Question -->
-        <section class="hero is-medium is-info is-bold">
-            <div class="hero-body">
+        <div v-else>
 
-                <!-- Submitting a Question -->
-                <div class="container" v-if="question_ninja === current_ninja">
-                    <div v-if="postedQuestion === null">
-                        <h2 class="title">
-                            You are writing the Question!
-                        </h2>
-                        <!-- Question Form -->
-                        <form method="post" @submit.prevent="postQuestion">
-                            <fieldset>
-                                <b-field label="Your Question">
-                                    <b-input maxlength="200" type="textarea" v-model="question"
-                                             placeholder="Write out a funny, witty, or outrageous question for your fellow Ninjas to answer!">
+            <!-- Round Question -->
+            <section class="hero is-medium is-info is-bold">
+                <div class="hero-body">
 
-                                    </b-input>
-                                </b-field>
-                                <button type="submit" class="button is-medium is-success">Submit Question</button>
-                            </fieldset>
-                        </form>
+                    <!-- Submitting a Question -->
+                    <div class="container" v-if="question_ninja === current_ninja">
+                        <div v-if="postedQuestion === null">
+                            <h2 class="title">
+                                You are writing the Question!
+                            </h2>
+                            <!-- Question Form -->
+                            <form method="post" @submit.prevent="postQuestion">
+                                <fieldset>
+                                    <b-field label="Your Question">
+                                        <b-input maxlength="200" type="textarea" v-model="question"
+                                                 placeholder="Write out a funny, witty, or outrageous question for your fellow Ninjas to answer!">
+
+                                        </b-input>
+                                    </b-field>
+                                    <button type="submit" class="button is-medium is-success">Submit Question</button>
+                                </fieldset>
+                            </form>
+                        </div>
+
+                        <!-- Display new Question -->
+                        <div v-else>
+                            <h1 class="title">
+                                {{ question }}
+                            </h1>
+                            <h2 class="subtitle">
+                                "{{ question_ninja }}"
+                            </h2>
+                        </div>
                     </div>
 
-                    <!-- Display new Question -->
-                    <div v-else>
+                    <!-- Waiting/View submitted Question from someone else -->
+                    <div class="container" v-else>
                         <h1 class="title">
                             {{ question }}
                         </h1>
@@ -46,116 +59,100 @@
                             "{{ question_ninja }}"
                         </h2>
                     </div>
-                </div>
 
-                <!-- Waiting/View submitted Question from someone else -->
-                <div class="container" v-else>
-                    <h1 class="title">
-                        {{ question }}
-                    </h1>
-                    <h2 class="subtitle">
-                        "{{ question_ninja }}"
-                    </h2>
-                </div>
-
-                <div v-if="timerObject">
-                    <br><br>
-                    <nav class="level is-mobile">
-                        <div class="level-item has-text-centered">
-                            <div>
-                                <p class="heading">Time Remaing</p>
-                                <p class="title">{{ timer }} seconds...</p>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
-            </div>
-        </section>
-
-        <!-- Answers -->
-        <section class="hero is-dark is-bold">
-            <div class="hero-body">
-
-                <!-- Player Cards -->
-                <div class="columns container is-fluid" v-if="roundOver">
-                    <div class="column" v-for="answer in answers">
-                        <div class="card">
-                            <header class="card-header">
-                                <p class="card-header-title" v-if="showAnswers">
-                                    {{ answer.username }}
-                                </p>
-                            </header>
-                            <div class="card-content">
-                                <div class="content">
-                                    {{ answer.answer }}
+                    <div v-if="timerObject">
+                        <br><br>
+                        <nav class="level is-mobile">
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Time Remaing</p>
+                                    <p class="title">{{ timer }} seconds...</p>
                                 </div>
                             </div>
-                            <!--<footer class="card-footer">-->
-                                <!--<a href="#" class="card-footer-item">-->
-                                <!--<span class="icon">-->
-                                    <!--<i class="fas fa-thumbs-up"></i>-->
-                                <!--</span>-->
-                                    <!--Like-->
-                                <!--</a>-->
-                                <!--<a href="#" class="card-footer-item">-->
-                                <!--<span class="icon">-->
-                                    <!--<i class="fas fa-thumbs-down"></i>-->
-                                <!--</span>-->
-                                    <!--Dislike-->
-                                <!--</a>-->
-                            <!--</footer>-->
+                        </nav>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Answers -->
+            <section class="hero is-dark is-bold">
+                <div class="hero-body">
+
+                    <!-- Player Cards -->
+                    <div class="columns container is-fluid" v-if="roundOver">
+                        <div class="column" v-for="answer in answers">
+                            <div class="card">
+                                <header class="card-header">
+                                    <p class="card-header-title" v-if="showAnswers">
+                                        {{ answer.username }}
+                                    </p>
+                                </header>
+                                <div class="card-content">
+                                    <div class="content">
+                                        {{ answer.answer }}
+                                    </div>
+                                </div>
+                                <footer class="card-footer" v-if="!showAnswers">
+                                    <div v-if="question_ninja === current_ninja">
+                                        <a @click="selectWinner(answer.username)" class="card-footer-item button is-success">
+                                            Select as Winner
+                                        </a>
+                                    </div>
+                                </footer>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Question Ninja is waiting for answers -->
-                <div class="container" align="center" v-else>
-                    <b-message type="is-info" has-icon>
-                        Waiting on All Ninja's to answer...
-                    </b-message>
-                </div>
-
-                <!-- Answering a Question -->
-                <div class="container" v-if="question_ninja !== current_ninja">
-                    <div v-if="canAnswer">
-                        <!-- Answer Form -->
-                        <form method="post" @submit.prevent="answerQuestion">
-                            <fieldset>
-                                <b-field label="Your Answer">
-                                    <b-input maxlength="200" type="textarea" v-model="answer"
-                                             placeholder="Write an unfiltered and hilarious answer to your Question Ninja!">
-                                    </b-input>
-                                </b-field>
-                                <button type="submit" class="button is-medium is-success">Submit Answer</button>
-                            </fieldset>
-                        </form>
+                    <!-- Question Ninja is waiting for answers -->
+                    <div class="container" align="center" v-else>
+                        <b-message type="is-info" has-icon>
+                            Waiting on All Ninja's to answer...
+                        </b-message>
                     </div>
+
+                    <!-- Answering a Question -->
+                    <div class="container" v-if="question_ninja !== current_ninja">
+                        <br>
+                        <div v-if="canAnswer">
+                            <!-- Answer Form -->
+                            <form method="post" @submit.prevent="answerQuestion">
+                                <fieldset>
+                                    <b-field label="Your Answer">
+                                        <b-input maxlength="200" type="textarea" v-model="answer"
+                                                 placeholder="Write an unfiltered and hilarious answer to your Question Ninja!">
+                                        </b-input>
+                                    </b-field>
+                                    <button type="submit" class="button is-medium is-success">Submit Answer</button>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Lobby List -->
+                    <nav class="panel is-dark container">
+                        <p class="panel-heading">
+                            {{ count }} Users in Game
+                        </p>
+                        <div class="panel-block" v-for="user in users">
+                            <span v-if="current_ninja === user.username" style="color: deepskyblue;">
+                                "{{ user.username }}" (You)
+                            </span>
+                            <span v-else style="color: white;">
+                                "{{ user.username }}"
+                            </span>
+                        </div>
+                        <div class="panel-block">
+                            <a @click="leaveGame" class="button is-danger is-outlined is-medium is-fullwidth">
+                                Leave Lobby
+                            </a>
+                        </div>
+                    </nav>
+
                 </div>
-
-                <hr>
-
-                <!-- Lobby List -->
-                <nav class="panel is-dark container">
-                    <p class="panel-heading">
-                        {{ count }} Users in Game
-                    </p>
-                    <div class="panel-block" v-for="user in users">
-                        <span v-if="current_ninja === user.username" style="color: deepskyblue;">
-                            "{{ user.username }}" (You)
-                        </span>
-                        <span v-else style="color: white;">
-                            "{{ user.username }}"
-                        </span>
-                    </div>
-                    <div class="panel-block">
-                        <a @click="leaveGame" class="button is-danger is-outlined is-medium is-fullwidth">
-                            Leave Lobby
-                        </a>
-                    </div>
-                </nav>
-
-            </div>
-        </section>
+            </section>
+        </div>
 
     </div>
 
@@ -200,7 +197,6 @@
 
             // Outside access to Vue Data and Props
             let env = this;
-
             Echo.join('lobby.'+this.lobby_game.session_id)
                 .here((users) => {
                     // Loop through all current Lobby Users and display them for the newest User
@@ -221,7 +217,7 @@
                     this.newQuestion(data.question)
                 })
                 .listen('answerQuestion', (data) => {
-                    env.answers.push({
+                    this.answers.push({
                         username: data.username,
                         answer: data.answer
                     });
@@ -233,10 +229,10 @@
                     }
                 })
                 .listen('roundWinner', (data) => {
-                    this.roundWinner(data)
+                    this.roundWinner(data.user)
                 })
                 .listen('matchWinner', (data) => {
-                    this.matchWinner(data)
+                    this.matchWinner(data.user)
                 });
 
             this.start();
@@ -337,6 +333,7 @@
                 // Send Request to update other player's games
                 axios.post(this.endpoint+'post-answer', {
                         answer: this.answer,
+                        username: this.current_ninja,
                         session_id: this.lobby_game.session_id
                     })
                     .then(({data}) => {
@@ -355,28 +352,53 @@
                 this.timerObject = null;
             },
 
-            // Select a Ninja as the Round's Winner
+            // Question Ninja has picked which Answer they like the most
+            selectWinner(username) {
+                // Send Request to update other player's games
+                axios.post(this.endpoint+'round-winner', {
+                        username: username,
+                        session_id: this.lobby_game.session_id
+                    })
+                    .then(({data}) => {
+                        // Wait for Broadcast Event
+                    });
+            },
+
+            // Display the Round's Winner
             roundWinner(username) {
                 // Stop Answer Timer
                 clearInterval(this.timerObject);
+                // Clear Timer and show all Answers
                 this.timerObject = null;
-
                 this.showAnswers = true;
-                this.rounds_won = this.rounds_won + 1;
 
-                // Wait for a few seconds
-                //todo
+                if (username === this.current_ninja) {
+                    this.rounds_won = this.rounds_won + 1;
+                }
 
+                // Wait for a few seconds then continue on
+                let env = this;
+                setTimeout(function () {
+                    env.startNextRound(username);
+                }, 5000);
+            },
+
+            // Switch Question Ninjas
+            startNextRound(username) {
                 // Check if User has won 3 rounds
                 if (this.rounds_won === 3) {
                     this.matchWinner(username)
                 }
 
-                // Clear Answers and Question
+                // Reset Round Settings (Clear Answers and Question)
                 this.answers = [];
                 this.question_ninja = username;
                 this.question = null;
                 this.postedQuestion = null;
+                this.answer = null;
+                this.roundOver = false;
+                this.showAnswers = false;
+                this.canAnswer = false;
 
                 // Winner of Round becomes the Question Ninja
                 if (this.question_ninja === this.current_ninja) {

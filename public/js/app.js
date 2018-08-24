@@ -58236,6 +58236,7 @@ var render = function() {
                 "a",
                 {
                   staticClass: "button is-success is-medium is-fullwidth",
+                  staticStyle: { color: "white" },
                   on: { click: _vm.startGame }
                 },
                 [_vm._v("\n                Start Game\n            ")]
@@ -58494,9 +58495,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58539,7 +58537,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         // Outside access to Vue Data and Props
         var env = this;
-
         Echo.join('lobby.' + this.lobby_game.session_id).here(function (users) {
             // Loop through all current Lobby Users and display them for the newest User
             users.forEach(function (user, index) {
@@ -58555,7 +58552,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }).listen('newQuestion', function (data) {
             _this.newQuestion(data.question);
         }).listen('answerQuestion', function (data) {
-            env.answers.push({
+            _this.answers.push({
                 username: data.username,
                 answer: data.answer
             });
@@ -58566,9 +58563,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.pickWinner();
             }
         }).listen('roundWinner', function (data) {
-            _this.roundWinner(data);
+            _this.roundWinner(data.user);
         }).listen('matchWinner', function (data) {
-            _this.matchWinner(data);
+            _this.matchWinner(data.user);
         });
 
         this.start();
@@ -58679,6 +58676,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Send Request to update other player's games
             axios.post(this.endpoint + 'post-answer', {
                 answer: this.answer,
+                username: this.current_ninja,
                 session_id: this.lobby_game.session_id
             }).then(function (_ref2) {
                 var data = _ref2.data;
@@ -58700,28 +58698,56 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
 
-        // Select a Ninja as the Round's Winner
+        // Question Ninja has picked which Answer they like the most
+        selectWinner: function selectWinner(username) {
+            // Send Request to update other player's games
+            axios.post(this.endpoint + 'round-winner', {
+                username: username,
+                session_id: this.lobby_game.session_id
+            }).then(function (_ref3) {
+                // Wait for Broadcast Event
+
+                var data = _ref3.data;
+            });
+        },
+
+
+        // Display the Round's Winner
         roundWinner: function roundWinner(username) {
             // Stop Answer Timer
             clearInterval(this.timerObject);
+            // Clear Timer and show all Answers
             this.timerObject = null;
-
             this.showAnswers = true;
-            this.rounds_won = this.rounds_won + 1;
 
-            // Wait for a few seconds
-            //todo
+            if (username === this.current_ninja) {
+                this.rounds_won = this.rounds_won + 1;
+            }
 
+            // Wait for a few seconds then continue on
+            var env = this;
+            setTimeout(function () {
+                env.startNextRound(username);
+            }, 5000);
+        },
+
+
+        // Switch Question Ninjas
+        startNextRound: function startNextRound(username) {
             // Check if User has won 3 rounds
             if (this.rounds_won === 3) {
                 this.matchWinner(username);
             }
 
-            // Clear Answers and Question
+            // Reset Round Settings (Clear Answers and Question)
             this.answers = [];
             this.question_ninja = username;
             this.question = null;
             this.postedQuestion = null;
+            this.answer = null;
+            this.roundOver = false;
+            this.showAnswers = false;
+            this.canAnswer = false;
 
             // Winner of Round becomes the Question Ninja
             if (this.question_ninja === this.current_ninja) {
@@ -58766,7 +58792,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { attrs: { id: "play_game" } }, [
     _vm.match_winner
-      ? _c("section", { staticClass: "hero is-medium is-info is-bold" }, [
+      ? _c("section", { staticClass: "hero is-medium is-success is-bold" }, [
           _c("div", { staticClass: "hero-body", attrs: { align: "center" } }, [
             _c("div", { staticClass: "container" }, [
               _c("h2", { staticClass: "title" }, [
@@ -58779,73 +58805,91 @@ var render = function() {
             ])
           ])
         ])
-      : _vm._e(),
-    _vm._v(" "),
-    _c("section", { staticClass: "hero is-medium is-info is-bold" }, [
-      _c("div", { staticClass: "hero-body" }, [
-        _vm.question_ninja === _vm.current_ninja
-          ? _c("div", { staticClass: "container" }, [
-              _vm.postedQuestion === null
-                ? _c("div", [
-                    _c("h2", { staticClass: "title" }, [
-                      _vm._v(
-                        "\n                        You are writing the Question!\n                    "
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "form",
-                      {
-                        attrs: { method: "post" },
-                        on: {
-                          submit: function($event) {
-                            $event.preventDefault()
-                            return _vm.postQuestion($event)
-                          }
-                        }
-                      },
-                      [
-                        _c(
-                          "fieldset",
-                          [
-                            _c(
-                              "b-field",
-                              { attrs: { label: "Your Question" } },
-                              [
-                                _c("b-input", {
-                                  attrs: {
-                                    maxlength: "200",
-                                    type: "textarea",
-                                    placeholder:
-                                      "Write out a funny, witty, or outrageous question for your fellow Ninjas to answer!"
-                                  },
-                                  model: {
-                                    value: _vm.question,
-                                    callback: function($$v) {
-                                      _vm.question = $$v
-                                    },
-                                    expression: "question"
-                                  }
-                                })
-                              ],
-                              1
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass: "button is-medium is-success",
-                                attrs: { type: "submit" }
-                              },
-                              [_vm._v("Submit Question")]
+      : _c("div", [
+          _c("section", { staticClass: "hero is-medium is-info is-bold" }, [
+            _c("div", { staticClass: "hero-body" }, [
+              _vm.question_ninja === _vm.current_ninja
+                ? _c("div", { staticClass: "container" }, [
+                    _vm.postedQuestion === null
+                      ? _c("div", [
+                          _c("h2", { staticClass: "title" }, [
+                            _vm._v(
+                              "\n                            You are writing the Question!\n                        "
                             )
-                          ],
-                          1
-                        )
-                      ]
-                    )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "form",
+                            {
+                              attrs: { method: "post" },
+                              on: {
+                                submit: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.postQuestion($event)
+                                }
+                              }
+                            },
+                            [
+                              _c(
+                                "fieldset",
+                                [
+                                  _c(
+                                    "b-field",
+                                    { attrs: { label: "Your Question" } },
+                                    [
+                                      _c("b-input", {
+                                        attrs: {
+                                          maxlength: "200",
+                                          type: "textarea",
+                                          placeholder:
+                                            "Write out a funny, witty, or outrageous question for your fellow Ninjas to answer!"
+                                        },
+                                        model: {
+                                          value: _vm.question,
+                                          callback: function($$v) {
+                                            _vm.question = $$v
+                                          },
+                                          expression: "question"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "button is-medium is-success",
+                                      attrs: { type: "submit" }
+                                    },
+                                    [_vm._v("Submit Question")]
+                                  )
+                                ],
+                                1
+                              )
+                            ]
+                          )
+                        ])
+                      : _c("div", [
+                          _c("h1", { staticClass: "title" }, [
+                            _vm._v(
+                              "\n                            " +
+                                _vm._s(_vm.question) +
+                                "\n                        "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("h2", { staticClass: "subtitle" }, [
+                            _vm._v(
+                              '\n                            "' +
+                                _vm._s(_vm.question_ninja) +
+                                '"\n                        '
+                            )
+                          ])
+                        ])
                   ])
-                : _c("div", [
+                : _c("div", { staticClass: "container" }, [
                     _c("h1", { staticClass: "title" }, [
                       _vm._v(
                         "\n                        " +
@@ -58861,214 +58905,234 @@ var render = function() {
                           '"\n                    '
                       )
                     ])
-                  ])
-            ])
-          : _c("div", { staticClass: "container" }, [
-              _c("h1", { staticClass: "title" }, [
-                _vm._v(
-                  "\n                    " +
-                    _vm._s(_vm.question) +
-                    "\n                "
-                )
-              ]),
+                  ]),
               _vm._v(" "),
-              _c("h2", { staticClass: "subtitle" }, [
-                _vm._v(
-                  '\n                    "' +
-                    _vm._s(_vm.question_ninja) +
-                    '"\n                '
-                )
-              ])
-            ]),
-        _vm._v(" "),
-        _vm.timerObject
-          ? _c("div", [
-              _c("br"),
-              _c("br"),
-              _vm._v(" "),
-              _c("nav", { staticClass: "level is-mobile" }, [
-                _c("div", { staticClass: "level-item has-text-centered" }, [
-                  _c("div", [
-                    _c("p", { staticClass: "heading" }, [
-                      _vm._v("Time Remaing")
-                    ]),
+              _vm.timerObject
+                ? _c("div", [
+                    _c("br"),
+                    _c("br"),
                     _vm._v(" "),
-                    _c("p", { staticClass: "title" }, [
-                      _vm._v(_vm._s(_vm.timer) + " seconds...")
+                    _c("nav", { staticClass: "level is-mobile" }, [
+                      _c(
+                        "div",
+                        { staticClass: "level-item has-text-centered" },
+                        [
+                          _c("div", [
+                            _c("p", { staticClass: "heading" }, [
+                              _vm._v("Time Remaing")
+                            ]),
+                            _vm._v(" "),
+                            _c("p", { staticClass: "title" }, [
+                              _vm._v(_vm._s(_vm.timer) + " seconds...")
+                            ])
+                          ])
+                        ]
+                      )
                     ])
                   ])
-                ])
-              ])
+                : _vm._e()
             ])
-          : _vm._e()
-      ])
-    ]),
-    _vm._v(" "),
-    _c("section", { staticClass: "hero is-dark is-bold" }, [
-      _c("div", { staticClass: "hero-body" }, [
-        _vm.roundOver
-          ? _c(
-              "div",
-              { staticClass: "columns container is-fluid" },
-              _vm._l(_vm.answers, function(answer) {
-                return _c("div", { staticClass: "column" }, [
-                  _c("div", { staticClass: "card" }, [
-                    _c("header", { staticClass: "card-header" }, [
-                      _vm.showAnswers
-                        ? _c("p", { staticClass: "card-header-title" }, [
+          ]),
+          _vm._v(" "),
+          _c("section", { staticClass: "hero is-dark is-bold" }, [
+            _c("div", { staticClass: "hero-body" }, [
+              _vm.roundOver
+                ? _c(
+                    "div",
+                    { staticClass: "columns container is-fluid" },
+                    _vm._l(_vm.answers, function(answer) {
+                      return _c("div", { staticClass: "column" }, [
+                        _c("div", { staticClass: "card" }, [
+                          _c("header", { staticClass: "card-header" }, [
+                            _vm.showAnswers
+                              ? _c("p", { staticClass: "card-header-title" }, [
+                                  _vm._v(
+                                    "\n                                    " +
+                                      _vm._s(answer.username) +
+                                      "\n                                "
+                                  )
+                                ])
+                              : _vm._e()
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "card-content" }, [
+                            _c("div", { staticClass: "content" }, [
+                              _vm._v(
+                                "\n                                    " +
+                                  _vm._s(answer.answer) +
+                                  "\n                                "
+                              )
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          !_vm.showAnswers
+                            ? _c("footer", { staticClass: "card-footer" }, [
+                                _vm.question_ninja === _vm.current_ninja
+                                  ? _c("div", [
+                                      _c(
+                                        "a",
+                                        {
+                                          staticClass:
+                                            "card-footer-item button is-success",
+                                          on: {
+                                            click: function($event) {
+                                              _vm.selectWinner(answer.username)
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            "\n                                        Select as Winner\n                                    "
+                                          )
+                                        ]
+                                      )
+                                    ])
+                                  : _vm._e()
+                              ])
+                            : _vm._e()
+                        ])
+                      ])
+                    })
+                  )
+                : _c(
+                    "div",
+                    { staticClass: "container", attrs: { align: "center" } },
+                    [
+                      _c(
+                        "b-message",
+                        { attrs: { type: "is-info", "has-icon": "" } },
+                        [
+                          _vm._v(
+                            "\n                        Waiting on All Ninja's to answer...\n                    "
+                          )
+                        ]
+                      )
+                    ],
+                    1
+                  ),
+              _vm._v(" "),
+              _vm.question_ninja !== _vm.current_ninja
+                ? _c("div", { staticClass: "container" }, [
+                    _c("br"),
+                    _vm._v(" "),
+                    _vm.canAnswer
+                      ? _c("div", [
+                          _c(
+                            "form",
+                            {
+                              attrs: { method: "post" },
+                              on: {
+                                submit: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.answerQuestion($event)
+                                }
+                              }
+                            },
+                            [
+                              _c(
+                                "fieldset",
+                                [
+                                  _c(
+                                    "b-field",
+                                    { attrs: { label: "Your Answer" } },
+                                    [
+                                      _c("b-input", {
+                                        attrs: {
+                                          maxlength: "200",
+                                          type: "textarea",
+                                          placeholder:
+                                            "Write an unfiltered and hilarious answer to your Question Ninja!"
+                                        },
+                                        model: {
+                                          value: _vm.answer,
+                                          callback: function($$v) {
+                                            _vm.answer = $$v
+                                          },
+                                          expression: "answer"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "button is-medium is-success",
+                                      attrs: { type: "submit" }
+                                    },
+                                    [_vm._v("Submit Answer")]
+                                  )
+                                ],
+                                1
+                              )
+                            ]
+                          )
+                        ])
+                      : _vm._e()
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("hr"),
+              _vm._v(" "),
+              _c(
+                "nav",
+                { staticClass: "panel is-dark container" },
+                [
+                  _c("p", { staticClass: "panel-heading" }, [
+                    _vm._v(
+                      "\n                        " +
+                        _vm._s(_vm.count) +
+                        " Users in Game\n                    "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _vm._l(_vm.users, function(user) {
+                    return _c("div", { staticClass: "panel-block" }, [
+                      _vm.current_ninja === user.username
+                        ? _c(
+                            "span",
+                            { staticStyle: { color: "deepskyblue" } },
+                            [
+                              _vm._v(
+                                '\n                            "' +
+                                  _vm._s(user.username) +
+                                  '" (You)\n                        '
+                              )
+                            ]
+                          )
+                        : _c("span", { staticStyle: { color: "white" } }, [
                             _vm._v(
-                              "\n                                " +
-                                _vm._s(answer.username) +
-                                "\n                            "
+                              '\n                            "' +
+                                _vm._s(user.username) +
+                                '"\n                        '
                             )
                           ])
-                        : _vm._e()
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "card-content" }, [
-                      _c("div", { staticClass: "content" }, [
-                        _vm._v(
-                          "\n                                " +
-                            _vm._s(answer.answer) +
-                            "\n                            "
-                        )
-                      ])
                     ])
-                  ])
-                ])
-              })
-            )
-          : _c(
-              "div",
-              { staticClass: "container", attrs: { align: "center" } },
-              [
-                _c(
-                  "b-message",
-                  { attrs: { type: "is-info", "has-icon": "" } },
-                  [
-                    _vm._v(
-                      "\n                    Waiting on All Ninja's to answer...\n                "
-                    )
-                  ]
-                )
-              ],
-              1
-            ),
-        _vm._v(" "),
-        _vm.question_ninja !== _vm.current_ninja
-          ? _c("div", { staticClass: "container" }, [
-              _vm.canAnswer
-                ? _c("div", [
+                  }),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "panel-block" }, [
                     _c(
-                      "form",
+                      "a",
                       {
-                        attrs: { method: "post" },
-                        on: {
-                          submit: function($event) {
-                            $event.preventDefault()
-                            return _vm.answerQuestion($event)
-                          }
-                        }
+                        staticClass:
+                          "button is-danger is-outlined is-medium is-fullwidth",
+                        on: { click: _vm.leaveGame }
                       },
                       [
-                        _c(
-                          "fieldset",
-                          [
-                            _c(
-                              "b-field",
-                              { attrs: { label: "Your Answer" } },
-                              [
-                                _c("b-input", {
-                                  attrs: {
-                                    maxlength: "200",
-                                    type: "textarea",
-                                    placeholder:
-                                      "Write an unfiltered and hilarious answer to your Question Ninja!"
-                                  },
-                                  model: {
-                                    value: _vm.answer,
-                                    callback: function($$v) {
-                                      _vm.answer = $$v
-                                    },
-                                    expression: "answer"
-                                  }
-                                })
-                              ],
-                              1
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass: "button is-medium is-success",
-                                attrs: { type: "submit" }
-                              },
-                              [_vm._v("Submit Answer")]
-                            )
-                          ],
-                          1
+                        _vm._v(
+                          "\n                            Leave Lobby\n                        "
                         )
                       ]
                     )
                   ])
-                : _vm._e()
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _c("hr"),
-        _vm._v(" "),
-        _c(
-          "nav",
-          { staticClass: "panel is-dark container" },
-          [
-            _c("p", { staticClass: "panel-heading" }, [
-              _vm._v(
-                "\n                    " +
-                  _vm._s(_vm.count) +
-                  " Users in Game\n                "
-              )
-            ]),
-            _vm._v(" "),
-            _vm._l(_vm.users, function(user) {
-              return _c("div", { staticClass: "panel-block" }, [
-                _vm.current_ninja === user.username
-                  ? _c("span", { staticStyle: { color: "deepskyblue" } }, [
-                      _vm._v(
-                        '\n                        "' +
-                          _vm._s(user.username) +
-                          '" (You)\n                    '
-                      )
-                    ])
-                  : _c("span", { staticStyle: { color: "white" } }, [
-                      _vm._v(
-                        '\n                        "' +
-                          _vm._s(user.username) +
-                          '"\n                    '
-                      )
-                    ])
-              ])
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "panel-block" }, [
-              _c(
-                "a",
-                {
-                  staticClass:
-                    "button is-danger is-outlined is-medium is-fullwidth",
-                  on: { click: _vm.leaveGame }
-                },
-                [
-                  _vm._v(
-                    "\n                        Leave Lobby\n                    "
-                  )
-                ]
+                ],
+                2
               )
             ])
-          ],
-          2
-        )
-      ])
-    ])
+          ])
+        ])
   ])
 }
 var staticRenderFns = []
