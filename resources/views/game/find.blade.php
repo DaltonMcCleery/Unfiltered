@@ -4,7 +4,7 @@
         <div class="container" align="center">
 
             {{-- Create a New Game --}}
-            <div class="hero-body">
+            <div class="hero-body" style="padding-top: 4rem; !important">
                 <h2 class="subtitle">
                     <span class="icon is-medium">
                         <i class="fas fa-plus-circle"></i>
@@ -12,6 +12,18 @@
                     CREATE A GAME
                 </h2>
                 @include('game.create')
+
+                <br><br>
+
+                <h2 class="subtitle">
+                    <span class="icon is-medium">
+                        <i class="fas fa-plus-circle"></i>
+                    </span>
+                    JOIN A GAME<br>
+                    <small>Requires Room Code</small>
+                </h2>
+                @include('game.join')
+
 
                 <br><br>
 
