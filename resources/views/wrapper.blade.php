@@ -13,14 +13,15 @@
                         </span>
                         UNFILTERED NINJAS
                     </a>
-                    <div class="navbar-burger burger" data-target="navbar">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
                 </div>
 
-                <div id="navbar" class="navbar-menu">
+                <div class="navbar-burger burger" data-target="navbar">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div id="navbar" class="navbar-menu" style="width: 80%;">
                     <div class="navbar-start">
                         <a class="navbar-item" href="{{ url('/how-to-play') }}">
                             How to Play
