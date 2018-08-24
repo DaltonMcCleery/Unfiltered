@@ -58104,16 +58104,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             env.count = env.count + 1;
         }).leaving(function (user) {
-            _this.users = _.remove(_this.users, function (lobby_user) {
-                return lobby_user.id !== user.id;
-            });
-            _this.count = _this.count - 1;
-
-            // Check if Last User left
-            if (_this.count === 0) {
-                // Destroy Lobby/Session
-                // todo
-            }
+            _this.leaveLobby(user);
         }).listen('startGame', function (data) {
             // Redirect the User to the Game's page
             window.location.href = '/play/game/' + _this.lobby_game.session_id;
@@ -58135,10 +58126,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Redirect Player to Find Game page
             //todo
         },
-        leaveLobby: function leaveLobby() {
-            console.log('Leaving Lobby...');
+        leaveLobby: function leaveLobby(user) {
             // Player has decided to leave the game
-            //todo
+            this.users = _.remove(this.users, function (lobby_user) {
+                return lobby_user.username !== user;
+            });
+            this.count = this.count - 1;
+
+            if (this.count === 0) {
+                // Destroy Lobby/Session
+                axios.post(this.endpoint + 'destroy-game', {
+                    session_id: this.lobby_game.session_id
+                });
+            }
+
+            // Redirect to Find Game page
+            window.location.href = '/play';
         },
         closeLobby: function closeLobby() {
             console.log('Closing Game...');
@@ -58262,7 +58265,11 @@ var render = function() {
                 {
                   staticClass:
                     "button is-danger is-outlined is-medium is-fullwidth",
-                  on: { click: _vm.leaveLobby }
+                  on: {
+                    click: function($event) {
+                      _vm.leaveLobby(_vm.current_ninja)
+                    }
+                  }
                 },
                 [_vm._v("\n                Leave Lobby\n            ")]
               )
@@ -58650,8 +58657,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     // Close Lobby and redirect All players to the homepage
                     clearInterval(this.timerObject);
                     this.timerObject = null;
-
-                    //todo
+                    this.leaveGame();
                 }
             }
         },
@@ -58660,7 +58666,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         // Leave the Game
         leaveGame: function leaveGame() {
             // User is leaving the Game
-            //todo
+            this.users = _.remove(this.users, function (lobby_user) {
+                return lobby_user.username !== this.current_ninja;
+            });
+            this.count = this.count - 1;
+
+            // Check if Last User left
+            if (this.count === 0) {
+                // Destroy Lobby/Session
+                axios.post(this.endpoint + 'destroy-game', {
+                    session_id: this.lobby_game.session_id
+                });
+            }
+
+            // Redirect to Find Game page
+            window.location.href = '/play';
         },
 
 
