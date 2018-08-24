@@ -314,8 +314,7 @@
                         // Close Lobby and redirect All players to the homepage
                         clearInterval(this.timerObject);
                         this.timerObject = null;
-
-                        //todo
+                        this.leaveGame();
                     }
                 }
             },
@@ -323,7 +322,21 @@
             // Leave the Game
             leaveGame() {
                 // User is leaving the Game
-                //todo
+                this.users = _.remove(this.users, function(lobby_user) {
+                    return lobby_user.username !== this.current_ninja;
+                });
+                this.count = this.count - 1;
+
+                // Check if Last User left
+                if (this.count === 0) {
+                    // Destroy Lobby/Session
+                    axios.post(this.endpoint+'destroy-game', {
+                        session_id: this.lobby_game.session_id
+                    });
+                }
+
+                // Redirect to Find Game page
+                window.location.href = '/play';
             },
 
             // Question Ninja submits a new Question

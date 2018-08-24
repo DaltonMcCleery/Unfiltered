@@ -37,7 +37,7 @@
             </div>
             <!-- Guest Options -->
             <div class="panel-block" v-else>
-                <a @click="leaveLobby" class="button is-danger is-outlined is-medium is-fullwidth">
+                <a @click="leaveLobby(current_ninja)" class="button is-danger is-outlined is-medium is-fullwidth">
                     Leave Lobby
                 </a>
             </div>
@@ -92,16 +92,7 @@
                     env.count = env.count + 1;
                 })
                 .leaving((user) => {
-                    this.users = _.remove(this.users, function(lobby_user) {
-                        return lobby_user.id !== user.id;
-                    });
-                    this.count = this.count - 1;
-
-                    // Check if Last User left
-                    if (this.count === 0) {
-                        // Destroy Lobby/Session
-                        // todo
-                    }
+                    this.leaveLobby(user)
                 })
                 .listen('startGame', (data) => {
                     // Redirect the User to the Game's page
@@ -126,10 +117,22 @@
                 //todo
             },
 
-            leaveLobby() {
-                console.log('Leaving Lobby...')
+            leaveLobby(user) {
                 // Player has decided to leave the game
-                //todo
+                this.users = _.remove(this.users, function(lobby_user) {
+                    return lobby_user.username !== user;
+                });
+                this.count = this.count - 1;
+
+                if (this.count === 0) {
+                    // Destroy Lobby/Session
+                    axios.post(this.endpoint+'destroy-game', {
+                        session_id: this.lobby_game.session_id
+                    });
+                }
+
+                // Redirect to Find Game page
+                window.location.href = '/play';
             },
 
             closeLobby() {
