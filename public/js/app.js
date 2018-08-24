@@ -58505,6 +58505,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58558,6 +58575,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                 env.count = env.count + 1;
             });
+        }).joining(function (user) {
+            env.users.push({
+                username: user.username
+            });
+
+            env.count = env.count + 1;
         }).leaving(function (user) {
             // todo
         }).listen('newQuestion', function (data) {
@@ -58751,7 +58774,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         startNextRound: function startNextRound(username) {
             // Check if User has won 3 rounds
             if (this.rounds_won === 3) {
-                this.matchWinner(username);
+                axios.post(this.endpoint + 'match-winner', {
+                    username: username,
+                    session_id: this.lobby_game.session_id
+                }).then(function (_ref4) {
+                    // Wait for Broadcast Event
+
+                    var data = _ref4.data;
+                });
             }
 
             // Reset Round Settings (Clear Answers and Question)
@@ -58817,7 +58847,32 @@ var render = function() {
                     _vm._s(_vm.match_winner) +
                     '" is the Winner!\n                '
                 )
-              ])
+              ]),
+              _vm._v(" "),
+              _vm.timerObject
+                ? _c("div", [
+                    _c("br"),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("nav", { staticClass: "level is-mobile" }, [
+                      _c(
+                        "div",
+                        { staticClass: "level-item has-text-centered" },
+                        [
+                          _c("div", [
+                            _c("p", { staticClass: "heading" }, [
+                              _vm._v("Lobby closes in")
+                            ]),
+                            _vm._v(" "),
+                            _c("p", { staticClass: "title" }, [
+                              _vm._v(_vm._s(_vm.timer) + " seconds...")
+                            ])
+                          ])
+                        ]
+                      )
+                    ])
+                  ])
+                : _vm._e()
             ])
           ])
         ])
@@ -59104,67 +59159,63 @@ var render = function() {
                         ])
                       : _vm._e()
                   ])
-                : _vm._e(),
-              _vm._v(" "),
-              _c("hr"),
-              _vm._v(" "),
-              _c(
-                "nav",
-                { staticClass: "panel is-dark container" },
-                [
-                  _c("p", { staticClass: "panel-heading" }, [
-                    _vm._v(
-                      "\n                        " +
-                        _vm._s(_vm.count) +
-                        " Users in Game\n                    "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _vm._l(_vm.users, function(user) {
-                    return _c("div", { staticClass: "panel-block" }, [
-                      _vm.current_ninja === user.username
-                        ? _c(
-                            "span",
-                            { staticStyle: { color: "deepskyblue" } },
-                            [
-                              _vm._v(
-                                '\n                            "' +
-                                  _vm._s(user.username) +
-                                  '" (You)\n                        '
-                              )
-                            ]
-                          )
-                        : _c("span", { staticStyle: { color: "white" } }, [
-                            _vm._v(
-                              '\n                            "' +
-                                _vm._s(user.username) +
-                                '"\n                        '
-                            )
-                          ])
-                    ])
-                  }),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "panel-block" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass:
-                          "button is-danger is-outlined is-medium is-fullwidth",
-                        on: { click: _vm.leaveGame }
-                      },
-                      [
-                        _vm._v(
-                          "\n                            Leave Lobby\n                        "
-                        )
-                      ]
-                    )
-                  ])
-                ],
-                2
-              )
+                : _vm._e()
             ])
           ])
-        ])
+        ]),
+    _vm._v(" "),
+    _c("hr"),
+    _vm._v(" "),
+    _c("section", { staticClass: "hero is-dark is-bold" }, [
+      _c("div", { staticClass: "hero-body" }, [
+        _c(
+          "nav",
+          { staticClass: "panel is-dark container" },
+          [
+            _c("p", { staticClass: "panel-heading" }, [
+              _vm._v(
+                "\n            " +
+                  _vm._s(_vm.count) +
+                  " Users in Game\n        "
+              )
+            ]),
+            _vm._v(" "),
+            _vm._l(_vm.users, function(user) {
+              return _c("div", { staticClass: "panel-block" }, [
+                _vm.current_ninja === user.username
+                  ? _c("span", { staticStyle: { color: "deepskyblue" } }, [
+                      _vm._v(
+                        '\n                "' +
+                          _vm._s(user.username) +
+                          '" (You)\n            '
+                      )
+                    ])
+                  : _c("span", { staticStyle: { color: "white" } }, [
+                      _vm._v(
+                        '\n                "' +
+                          _vm._s(user.username) +
+                          '"\n            '
+                      )
+                    ])
+              ])
+            }),
+            _vm._v(" "),
+            _c("div", { staticClass: "panel-block" }, [
+              _c(
+                "a",
+                {
+                  staticClass:
+                    "button is-danger is-outlined is-medium is-fullwidth",
+                  on: { click: _vm.leaveGame }
+                },
+                [_vm._v("\n                Leave Lobby\n            ")]
+              )
+            ])
+          ],
+          2
+        )
+      ])
+    ])
   ])
 }
 var staticRenderFns = []

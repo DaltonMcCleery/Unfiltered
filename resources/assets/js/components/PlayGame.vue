@@ -9,10 +9,22 @@
                     <h2 class="title">
                         "{{ match_winner }}" is the Winner!
                     </h2>
+                    <div v-if="timerObject">
+                        <br><br>
+                        <nav class="level is-mobile">
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Lobby closes in</p>
+                                    <p class="title">{{ timer }} seconds...</p>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </section>
 
+        <!-- Game is in Progress -->
         <div v-else>
 
             <!-- Round Question -->
@@ -74,6 +86,7 @@
                 </div>
             </section>
 
+            <!-- Round Winner -->
             <section class="hero is-danger" v-if="round_winner">
                 <div class="hero-body">
                     <div class="container">
@@ -138,31 +151,35 @@
                         </div>
                     </div>
 
-                    <hr>
-
-                    <!-- Lobby List -->
-                    <nav class="panel is-dark container">
-                        <p class="panel-heading">
-                            {{ count }} Users in Game
-                        </p>
-                        <div class="panel-block" v-for="user in users">
-                            <span v-if="current_ninja === user.username" style="color: deepskyblue;">
-                                "{{ user.username }}" (You)
-                            </span>
-                            <span v-else style="color: white;">
-                                "{{ user.username }}"
-                            </span>
-                        </div>
-                        <div class="panel-block">
-                            <a @click="leaveGame" class="button is-danger is-outlined is-medium is-fullwidth">
-                                Leave Lobby
-                            </a>
-                        </div>
-                    </nav>
-
                 </div>
             </section>
         </div>
+
+        <hr>
+
+        <!-- Lobby List -->
+        <section class="hero is-dark is-bold">
+            <div class="hero-body">
+                <nav class="panel is-dark container">
+            <p class="panel-heading">
+                {{ count }} Users in Game
+            </p>
+            <div class="panel-block" v-for="user in users">
+                <span v-if="current_ninja === user.username" style="color: deepskyblue;">
+                    "{{ user.username }}" (You)
+                </span>
+                <span v-else style="color: white;">
+                    "{{ user.username }}"
+                </span>
+            </div>
+            <div class="panel-block">
+                <a @click="leaveGame" class="button is-danger is-outlined is-medium is-fullwidth">
+                    Leave Lobby
+                </a>
+            </div>
+        </nav>
+            </div>
+        </section>
 
     </div>
 
@@ -220,6 +237,13 @@
                         env.count = env.count + 1;
                     });
 
+                })
+                .joining((user) => {
+                    env.users.push({
+                        username: user.username
+                    });
+
+                    env.count = env.count + 1;
                 })
                 .leaving((user) => {
                     // todo
@@ -402,7 +426,13 @@
             startNextRound(username) {
                 // Check if User has won 3 rounds
                 if (this.rounds_won === 3) {
-                    this.matchWinner(username)
+                    axios.post(this.endpoint+'match-winner', {
+                            username: username,
+                            session_id: this.lobby_game.session_id
+                        })
+                        .then(({data}) => {
+                            // Wait for Broadcast Event
+                        });
                 }
 
                 // Reset Round Settings (Clear Answers and Question)
