@@ -101,6 +101,26 @@ class GameController extends Controller
     }
 
     /**
+     * Try to join a Game set to Private by Room Code (Game ID)
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function joinPrivateGame(Request $request) {
+        // Get DB Query ready
+        $game = Games::where('game_id', $request->game_id);
+
+        if ($game->exists()) {
+            // Try to join
+            $session_id = $game->value('session_id');
+            return $this->lobby($session_id);
+        } else {
+            // Game cannot be found
+            return redirect('/play')->with('error', 'Cannot find a Game with that Room Code!');
+        }
+    }
+
+    /**
      * Play a Game
      *
      * @param $session_id
@@ -144,6 +164,8 @@ class GameController extends Controller
         }
 
     }
+
+    // ---> GAME
 
     /**
      * Send out the Start Game Event to the Lobby Channel
