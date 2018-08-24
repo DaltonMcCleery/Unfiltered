@@ -312,6 +312,9 @@
                         this.postQuestion();
                     } else { // type === 'exit'
                         // Close Lobby and redirect All players to the homepage
+                        clearInterval(this.timerObject);
+                        this.timerObject = null;
+
                         //todo
                     }
                 }
@@ -328,40 +331,35 @@
                 // Disable the Question Ninja's Form
                 this.postedQuestion = this.question;
 
-                // Stop Question Timer
-                clearInterval(this.timerObject);
-                this.timerObject = null;
-
                 // Send Request to update other player's games
                 axios.post(this.endpoint+'post-question', {
                         question: this.question,
                         session_id: this.lobby_game.session_id
                     })
                     .then(({data}) => {
-
-                        // Start Answer Timer
-                        this.timer = 90;
-                        let env = this;
-                        this.timerObject = setInterval(function() {
-                            env.handleTimer('game')
-                        }, 1000);
+                        // Wait for Event to be Broadcast
+                        // ---> New Question
                     });
             },
 
-            // A New Question has been submitted by the Question Ninja
+            // (BROADCAST METHOD) A New Question has been submitted by the Question Ninja
             newQuestion(question) {
+                // Stop Question Timer
+                clearInterval(this.timerObject);
+                this.timerObject = null;
+
                 if (this.question_ninja !== this.current_ninja) {
                     // Question Ninja submitted a Question
                     this.question = question;
                     this.canAnswer = true;
-
-                    // Start Answer Timer
-                    this.timer = 90;
-                    let env = this;
-                    this.timerObject = setInterval(function () {
-                        env.handleTimer('game')
-                    }, 1000);
                 }
+
+                // Start Answer Timer
+                this.timer = 90;
+                let env = this;
+                this.timerObject = setInterval(function () {
+                    env.handleTimer('game')
+                }, 1000);
             },
 
             // Post your Answer to the submitted Question
@@ -380,12 +378,12 @@
 
             // Question Ninja must pick a winning Ninja's Answer for the round
             pickWinner() {
-                // Check if all Ninja's have answered the question
-                this.roundOver = true;
-
                 // Stop Answer Timer
                 clearInterval(this.timerObject);
                 this.timerObject = null;
+
+                // Show JUST Ninja Answers (no Usernames)
+                this.roundOver = true;
             },
 
             // Question Ninja has picked which Answer they like the most
@@ -397,26 +395,27 @@
                     })
                     .then(({data}) => {
                         // Wait for Broadcast Event
+                        // ---> Round Winner
                     });
             },
 
-            // Display the Round's Winner
+            // (BROADCAST METHOD) Display the Round's Winner
             roundWinner(username) {
-                // Stop Answer Timer
+                // Clear Timer and show all Answers
                 clearInterval(this.timerObject);
+                this.timerObject = null;
+                this.showAnswers = true;
 
                 // Display Round Winner to everyone
                 this.round_winner = username;
 
-                // Clear Timer and show all Answers
-                this.timerObject = null;
-                this.showAnswers = true;
-
+                // Check if the Round Winner is the current Authed Ninja
                 if (username === this.current_ninja) {
+                    // If it is, their Round Won total goes up by 1 (3 to win)
                     this.rounds_won = this.rounds_won + 1;
                 }
 
-                // Wait for a few seconds then continue on
+                // Wait for a few seconds then continue on to the next Round
                 let env = this;
                 setTimeout(function () {
                     env.startNextRound(username);
@@ -433,6 +432,7 @@
                         })
                         .then(({data}) => {
                             // Wait for Broadcast Event
+                            // ---> Match Winner
                         });
                 }
 
@@ -456,7 +456,7 @@
                     this.question = 'Waiting on "'+this.question_ninja+'" to write a Question...';
                 }
 
-                // Start Question Timer
+                // Start the next Question Timer
                 this.timer = 90;
                 let env = this;
                 this.timerObject = setInterval(function () {
@@ -464,13 +464,13 @@
                 }, 1000);
             },
 
-            // Select a Ninja as the Match Winner
+            // (BROADCAST METHOD) Select a Ninja as the Match Winner
             matchWinner(username) {
                 // Display Winner
                 this.match_winner = username;
 
                 // Stop any Timer
-                // clearInterval(this.timerObject);
+                clearInterval(this.timerObject);
 
                 // Start Exit Timer
                 this.timer = 100;
