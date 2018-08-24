@@ -35,7 +35,7 @@
                                 Max Player Count
                             </label>
                             <div class="col-md-6">
-                                <input id="max_sessions" type="number" min="2" max="6" placeholder="Number of Players (Max 6)"
+                                <input id="max_sessions" type="number" min="3" max="6" placeholder="Number of Players (Min 3 & Max 6)"
                                        class="form-control{{ $errors->has('max_sessions') ? ' is-invalid' : '' }}"
                                        name="max_sessions" required>
 
