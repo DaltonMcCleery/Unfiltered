@@ -1,67 +1,52 @@
 @if(Session::has('success'))
-    <article class="notification is-success" style="margin-bottom: 0rem; !important">
-        <div class="media">
-            <div class="media-left">
-                <span class="icon is-large">
-                    <i class="mdi mdi-check-circle mdi-48px"></i>
-                </span>
-            </div>
-            <div class="media-content">
-                {{ Session::get('success') }}
+    <section class="hero is-success">
+        <div class="hero-body" align="center">
+            <div class="container">
+                <h2 class="subtitle">
+                    {{ Session::get('success') }}
+                </h2>
             </div>
         </div>
-    </article>
+    </section>
 @elseif (Session::has('info'))
-    <article class="notification is-info" style="margin-bottom: 0rem; !important">
-        <div class="media">
-            <div class="media-left">
-                <span class="icon is-large">
-                    <i class="mdi mdi-information mdi-48px"></i>
-                </span>
-            </div>
-            <div class="media-content">
-                {{ Session::get('info') }}
+    <section class="hero is-info">
+        <div class="hero-body" align="center">
+            <div class="container">
+                <h2 class="subtitle">
+                    {{ Session::get('info') }}
+                </h2>
             </div>
         </div>
-    </article>
+    </section>
 @elseif (Session::has('warn'))
-    <article class="notification is-warning" style="margin-bottom: 0rem; !important">
-        <div class="media">
-            <div class="media-left">
-                <span class="icon is-large">
-                    <i class="mdi mdi-alert mdi-48px"></i>
-                </span>
-            </div>
-            <div class="media-content">
-                {{ Session::get('warn') }}
+    <section class="hero is-warning">
+        <div class="hero-body" align="center">
+            <div class="container">
+                <h2 class="subtitle">
+                    {{ Session::get('warn') }}
+                </h2>
             </div>
         </div>
-    </article>
+    </section>
 @elseif (Session::has('error'))
-    <article class="notification is-danger" style="margin-bottom: 0rem; !important">
-        <div class="media">
-            <div class="media-left">
-                <span class="icon is-large">
-                    <i class="mdi mdi-alert-circle mdi-48px"></i>
-                </span>
-            </div>
-            <div class="media-content">
-                {{ Session::get('error') }}
+    <section class="hero is-danger">
+        <div class="hero-body" align="center">
+            <div class="container">
+                <h2 class="subtitle">
+                    {{ Session::get('error') }}
+                </h2>
             </div>
         </div>
-    </article>
+    </section>
 @elseif (Session::has('general'))
-    <article class="notification" style="margin-bottom: 0rem; !important">
-        <div class="media">
-            <div class="media-left">
-                <span class="icon is-large">
-                    <i class="mdi mdi-information mdi-48px"></i>
-                </span>
-            </div>
-            <div class="media-content">
-                {{ Session::get('general') }}
+    <section class="hero">
+        <div class="hero-body" align="center">
+            <div class="container">
+                <h2 class="subtitle">
+                    {{ Session::get('general') }}
+                </h2>
             </div>
         </div>
-    </article>
+    </section>
 @else
 @endif
