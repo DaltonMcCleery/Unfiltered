@@ -204,4 +204,13 @@ class GameController extends Controller
         //todo
     }
 
+    /**
+     * Remove a given Game from Database
+     *
+     * @param Request $request
+     */
+    public function closeGame(Request $request) {
+        Games::where('session_id', $request->session_id)->delete();
+    }
+
 }

@@ -22,6 +22,7 @@ Route::middleware(['api'])->group(function () {
         Route::post('post-answer', 'GameController@postAnswer');
         Route::post('round-winner', 'GameController@decideRoundWinner');
         Route::post('match-winner', 'GameController@decideMatchWinner');
+        Route::post('destroy-game', 'GameController@closeGame');
     });
 
     Route::get('find/games', 'GameController@find');
