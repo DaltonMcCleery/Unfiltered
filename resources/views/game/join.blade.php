@@ -19,7 +19,7 @@
                             <div class="col-md-6">
                                 <input id="game_id" type="text" class="form-control{{ $errors->has('game_id') ? ' is-invalid' : '' }}"
                                        name="game_id" value="{{ old('game_id') }}" placeholder="Game Room Code (ex. THELOUDCREW)"
-                                       required autofocus>
+                                       required>
 
                                 @if ($errors->has('game_id'))
                                     <span class="invalid-feedback" role="alert">
