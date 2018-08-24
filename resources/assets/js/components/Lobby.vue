@@ -26,7 +26,7 @@
             </div>
             <!-- Host Options -->
             <div class="panel-block" v-if="current_ninja === lobby_game.host.username">
-                <a @click="startGame" class="button is-success is-medium is-fullwidth">
+                <a @click="startGame" class="button is-success is-medium is-fullwidth" style="color: white;">
                     Start Game
                 </a>
             </div>
