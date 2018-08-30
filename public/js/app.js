@@ -58067,7 +58067,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             count: 1,
             users: [],
             lobby_game: {},
-            endpoint: "/api/game/start"
+            endpoint: "/api/game/"
         };
     },
 
@@ -58105,6 +58105,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             env.count = env.count + 1;
         }).leaving(function (user) {
             _this.leaveLobby(user);
+        }).listen('kickPlayer', function (data) {
+            // Host has kicked a Player
+            if (data.user === _this.current_ninja) {
+                _this.leaveLobby(data.user);
+            }
+        }).listen('closeLobby', function (data) {
+            // Host has chosen to close the Lobby/Game
+            _this.leaveLobby(_this.current_ninja);
         }).listen('startGame', function (data) {
             // Redirect the User to the Game's page
             window.location.href = '/play/game/' + _this.lobby_game.session_id;
@@ -58116,16 +58124,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
     methods: {
+
+        // Host requests to Kick a Player
         kickPlayer: function kickPlayer(user) {
-            console.log('Kicking Player...');
-            console.log(user);
-
-            // Remove Player from Channel/Session
-            //todo
-
             // Redirect Player to Find Game page
-            //todo
+            axios.post(this.endpoint + 'kick-player', {
+                session_id: this.lobby_game.session_id,
+                username: user
+            });
         },
+
+
+        // User is leaving the Lobby
         leaveLobby: function leaveLobby(user) {
             // Player has decided to leave the game
             this.users = _.remove(this.users, function (lobby_user) {
@@ -58143,19 +58153,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Redirect to Find Game page
             window.location.href = '/play';
         },
+
+
+        // Host requests to close the Lobby and delete the Game Session
         closeLobby: function closeLobby() {
-            console.log('Closing Game...');
-            // Remove all current players from Channel
-            //todo
-
             // Delete Game in DB
-            //todo
-
-            // Redirect all Players to the Find Game page
-            //todo
+            axios.post(this.endpoint + 'destroy-game', {
+                session_id: this.lobby_game.session_id
+            });
         },
+
+
+        // Host has requested to Start the Game with the current Lobby Players
         startGame: function startGame() {
-            axios.post(this.endpoint, {
+            axios.post(this.endpoint + 'start', {
                 session_id: this.lobby_game.session_id
             }).then(function (_ref) {
                 var data = _ref.data;

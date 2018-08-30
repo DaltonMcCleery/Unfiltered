@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\answerQuestion;
+use App\Events\closeLobby;
+use App\Events\kickPlayer;
 use App\Events\startGame;
 use App\Events\joinLobby;
 use App\Events\matchWinner;
@@ -168,6 +170,16 @@ class GameController extends Controller
     // ---> GAME
 
     /**
+     * Kick a Player from the Lobby Channel
+     *
+     * @param Request $request
+     */
+    public function kickPlayer(Request $request) {
+        // Broadcast to all players in Lobby to go to the Game page
+        broadcast(new kickPlayer($request->username, $request->session_id));
+    }
+
+    /**
      * Send out the Start Game Event to the Lobby Channel
      *
      * @param Request $request
@@ -224,6 +236,15 @@ class GameController extends Controller
 
         // Update the Winning Ninja's stats
         //todo
+    }
+
+    /**
+     * Close a current Game Lobby and Game
+     *
+     * @param Request $request
+     */
+    public function closeLobby(Request $request) {
+        broadcast(new closeLobby($request->session_id));
     }
 
     /**
