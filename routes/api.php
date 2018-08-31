@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 // --- Authenticated Customer --- //
 Route::middleware(['api'])->group(function () {
 
+    // ---> Game
     Route::prefix('game')->group(function () {
         Route::post('start', 'GameController@startGame');
         Route::post('post-question', 'GameController@postQuestion');
@@ -28,7 +29,13 @@ Route::middleware(['api'])->group(function () {
     });
     Route::get('find/games', 'GameController@find');
 
+    // ---> Profile
     Route::prefix('profile')->group(function () {
         Route::post('update', 'NinjaController@updateProfile');
+    });
+
+    // --> Reports
+    Route::prefix('report')->group(function () {
+        Route::post('/', 'HomeController@reportUser');
     });
 });

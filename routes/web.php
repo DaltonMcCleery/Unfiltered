@@ -39,7 +39,6 @@ Route::middleware('ninja')->group(function () {
     // ---> REPORT
     Route::prefix('report')->group(function () {
         Route::get('/', 'HomeController@viewReportForm')->name('report');
-        Route::post('/', 'HomeController@reportUser')->name('report.ninja');
     });
 });
 

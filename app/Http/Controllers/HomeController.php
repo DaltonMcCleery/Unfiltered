@@ -40,7 +40,7 @@ class HomeController extends Controller
      * Report a User/Player
      *
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Support\MessageBag
      */
     public function reportUser(Request $request) {
         // Validate Request
@@ -51,9 +51,9 @@ class HomeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return $validator->errors();
         }
 
-        return redirect()->back()->with('success', 'We will be reviewing your report and taking action if necessary');
+        return response('Success', 200);
     }
 }
