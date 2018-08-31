@@ -150,8 +150,6 @@
                     })
                     .then(({data}) => {
                         // Check response
-                        console.log(data);
-
                         if (data !== 'Updated') {
                             // Show errors
                             this.errors = data;
