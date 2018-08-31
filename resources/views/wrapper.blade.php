@@ -47,6 +47,13 @@
                                     My Profile
                                 </a>
                             </div>
+                            @if (Auth::user()->role === 'admin')
+                                <div class="navbar-item">
+                                    <a class="button is-rounded is-danger is-inverted" href="{{ url('/dashboard') }}">
+                                        Dashboard
+                                    </a>
+                                </div>
+                            @endif
                         @endguest
                     </div>
                 </div>
