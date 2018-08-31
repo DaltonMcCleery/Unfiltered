@@ -35,6 +35,12 @@ Route::middleware('ninja')->group(function () {
         Route::get('/', 'NinjaController@index')->name('ninja.profile');
         Route::get('/update', 'NinjaController@updateProfile')->name('ninja.update.profile');
     });
+
+    // ---> REPORT
+    Route::prefix('report')->group(function () {
+        Route::get('/', 'HomeController@viewReportForm')->name('report');
+        Route::post('/', 'HomeController@reportUser')->name('report.ninja');
+    });
 });
 
 // --- Admin --- //
