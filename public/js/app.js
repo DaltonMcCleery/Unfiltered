@@ -58677,8 +58677,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         // Leave the Game
         leaveGame: function leaveGame() {
             // User is leaving the Game
+            var env = this;
             this.users = _.remove(this.users, function (lobby_user) {
-                return lobby_user.username !== this.current_ninja;
+                return lobby_user.username !== env.current_ninja;
             });
             this.count = this.count - 1;
 
