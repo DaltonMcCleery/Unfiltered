@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
-class Ninja
+class Admin
 {
     /**
      * The Guard implementation.
@@ -41,11 +41,11 @@ class Ninja
 
         $user = $this->auth->user();
 
-        if ($user->role === 'ninja' || $user->role === 'admin')
+        if ($user->role === 'admin')
         {
             return $next($request);
         } else {
-            return redirect('/')->with('warn', 'You have to be a Ninja to do that.');
+            return redirect('/')->with('warn', 'You don\'t have access to that.');
         }
     }
 }
