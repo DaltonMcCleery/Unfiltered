@@ -322,8 +322,9 @@
             // Leave the Game
             leaveGame() {
                 // User is leaving the Game
+                let env = this;
                 this.users = _.remove(this.users, function(lobby_user) {
-                    return lobby_user.username !== this.current_ninja;
+                    return lobby_user.username !== env.current_ninja;
                 });
                 this.count = this.count - 1;
 
