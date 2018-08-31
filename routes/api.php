@@ -26,6 +26,9 @@ Route::middleware(['api'])->group(function () {
         Route::post('close-lobby', 'GameController@closeLobby');
         Route::post('kick-player', 'GameController@kickPlayer');
     });
-
     Route::get('find/games', 'GameController@find');
+
+    Route::prefix('profile')->group(function () {
+        Route::post('update', 'NinjaController@updateProfile');
+    });
 });
