@@ -38,3 +38,5 @@ Route::middleware('ninja')->group(function () {
 });
 
 Auth::routes();
+Route::post('/login', 'Auth\LoginController@login');
+Route::get('/logout', 'Auth\LoginController@logout');
