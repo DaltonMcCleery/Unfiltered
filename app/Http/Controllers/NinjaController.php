@@ -83,8 +83,4 @@ class NinjaController extends Controller
 
         return response('Updated', 200);
     }
-
-    public function validateProfile($request) {
-
-    }
 }
