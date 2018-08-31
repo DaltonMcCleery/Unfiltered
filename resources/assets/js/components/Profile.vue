@@ -19,7 +19,7 @@
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control"
-                                       name="name" :value="user.name" required>
+                                       name="name" v-model="name" required>
                             </div>
                         </div>
 
@@ -31,7 +31,7 @@
 
                             <div class="col-md-6">
                                 <input id="username" type="text" class="form-control"
-                                       name="username" :value="user.username" required>
+                                       name="username" v-model="username" required>
                             </div>
                         </div>
 
@@ -43,7 +43,7 @@
 
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control"
-                                       name="email" :value="user.email" required>
+                                       name="email" v-model="email" required>
                             </div>
                         </div>
 
@@ -82,6 +82,21 @@
                 </div>
             </div>
         </div>
+        <br>
+
+        <!-- Success -->
+        <b-notification type="is-success" v-if="success">
+            Your Ninja Profile has been updated!
+        </b-notification>
+
+        <!-- Errors -->
+        <b-notification type="is-danger" v-if="errors">
+            <ul>
+                <li v-for="error in errors">
+                    {{ error }}
+                </li>
+            </ul>
+        </b-notification>
     </div>
 
 </template>
@@ -91,11 +106,16 @@
         data() {
             return {
                 name: null,
+                old_name: '',
                 username: null,
+                old_username: '',
                 email: null,
+                old_email: '',
                 new_password: '',
                 new_password_conf: '',
-                endpoint: "api/profile"
+                errors: null,
+                success: null,
+                endpoint: "api/profile/"
             };
         },
 
@@ -106,12 +126,50 @@
         created() {
             // Convert passed Auth String into a JSON object
             this.user = JSON.parse(this.auth_user);
+
+            // Set the default details
+            this.name = this.user.name;
+            this.username = this.user.username;
+            this.email = this.user.email;
+
+            // Setup backup models
+            this.old_name = this.name;
+            this.old_username = this.username;
+            this.old_email = this.email;
         },
 
         methods: {
 
             update() {
-                console.log('Updating!')
+                // Send a request to Update a User
+                axios.post(this.endpoint+'update', {
+                        user_id: this.user.id,
+                        name: this.name,
+                        username: this.username,
+                        email: this.email
+                    })
+                    .then(({data}) => {
+                        // Check response
+                        console.log(data);
+
+                        if (data !== 'Updated') {
+                            // Show errors
+                            this.errors = data;
+
+                            // Change the models to the old versions before the form submitted
+                            this.name = this.old_name;
+                            this.username = this.old_username;
+                            this.email = this.old_email;
+                        } else {
+                            // Show success message
+                            this.success = true;
+
+                            // Set the old values to the new, updated details
+                            this.old_name = this.name;
+                            this.old_username = this.username;
+                            this.old_email = this.email;
+                        }
+                    });
             }
         }
     };
