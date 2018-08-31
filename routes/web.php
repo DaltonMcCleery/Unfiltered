@@ -37,6 +37,15 @@ Route::middleware('ninja')->group(function () {
     });
 });
 
+// --- Admin --- //
+Route::middleware('admin')->group(function () {
+
+    // ---> Dashboard
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/', 'AdminController@index')->name('find.game');
+    });
+});
+
 Auth::routes();
 Route::post('/login', 'Auth\LoginController@login');
 Route::get('/logout', 'Auth\LoginController@logout');
