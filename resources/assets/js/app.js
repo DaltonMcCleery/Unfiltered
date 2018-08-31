@@ -37,6 +37,7 @@ Vue.component('available-games', require('./components/AvailableGames.vue'));
 Vue.component('lobby', require('./components/Lobby.vue'));
 Vue.component('play-game', require('./components/PlayGame.vue'));
 Vue.component('update-profile', require('./components/Profile.vue'));
+Vue.component('report-user', require('./components/ReportUser.vue'));
 
 const app = new Vue({
     el: '#app'

@@ -25009,6 +25009,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('available-games', __webpa
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('lobby', __webpack_require__(51));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('play-game', __webpack_require__(54));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('update-profile', __webpack_require__(57));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('report-user', __webpack_require__(62));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app'
@@ -59482,8 +59483,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 var data = _ref.data;
 
                 // Check response
-                console.log(data);
-
                 if (data !== 'Updated') {
                     // Show errors
                     _this.errors = data;
@@ -59835,6 +59834,301 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 61 */,
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(63)
+/* template */
+var __vue_template__ = __webpack_require__(64)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ReportUser.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6233a116", Component.options)
+  } else {
+    hotAPI.reload("data-v-6233a116", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            username: null,
+            old_username: '',
+            reason: null,
+            old_reason: '',
+            errors: null,
+            success: null,
+            endpoint: "api/report"
+        };
+    },
+
+
+    props: {
+        user_id: String
+    },
+
+    created: function created() {
+        // do nothing
+    },
+
+
+    methods: {
+        report: function report() {
+            var _this = this;
+
+            // Send a request to Update a User
+            axios.post(this.endpoint, {
+                reportee_id: this.user_id,
+                reported_user: this.username,
+                reason: this.reason
+            }).then(function (_ref) {
+                var data = _ref.data;
+
+                // Check response
+                if (data !== 'Success') {
+                    // Show errors
+                    _this.errors = data;
+                    _this.success = null;
+
+                    // Change the models to the old versions before the form submitted
+                    _this.username = _this.old_username;
+                    _this.reason = _this.old_reason;
+                } else {
+                    // Show success message
+                    _this.success = true;
+                    _this.errors = null;
+
+                    // Empty form
+                    _this.username = null;
+                    _this.reason = null;
+                }
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "col-md-8 justify-content-center" },
+    [
+      _c("div", { staticClass: "card" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-content" }, [
+          _c("div", { staticClass: "content" }, [
+            _c(
+              "form",
+              {
+                attrs: { method: "post" },
+                on: {
+                  submit: function($event) {
+                    $event.preventDefault()
+                    return _vm.report($event)
+                  }
+                }
+              },
+              [
+                _c(
+                  "b-field",
+                  { attrs: { label: "Reported Player/Username" } },
+                  [
+                    _c("b-input", {
+                      attrs: { required: "" },
+                      model: {
+                        value: _vm.username,
+                        callback: function($$v) {
+                          _vm.username = $$v
+                        },
+                        expression: "username"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "b-field",
+                  { attrs: { label: "Reason" } },
+                  [
+                    _c("b-input", {
+                      attrs: {
+                        maxlength: "200",
+                        type: "textarea",
+                        required: ""
+                      },
+                      model: {
+                        value: _vm.reason,
+                        callback: function($$v) {
+                          _vm.reason = $$v
+                        },
+                        expression: "reason"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  { staticClass: "button is-info", attrs: { type: "submit" } },
+                  [
+                    _vm._v(
+                      "\n                        Report Ninja\n                    "
+                    )
+                  ]
+                )
+              ],
+              1
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("br"),
+      _vm._v(" "),
+      _vm.success
+        ? _c("b-notification", { attrs: { type: "is-success" } }, [
+            _vm._v(
+              "\n        We will be reviewing your report and taking action if necessary\n    "
+            )
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.errors
+        ? _c("b-notification", { attrs: { type: "is-danger" } }, [
+            _c(
+              "ul",
+              _vm._l(_vm.errors, function(error) {
+                return _c("li", [
+                  _vm._v(
+                    "\n                " + _vm._s(error) + "\n            "
+                  )
+                ])
+              })
+            )
+          ])
+        : _vm._e()
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("header", { staticClass: "card-header" }, [
+      _c("p", { staticClass: "card-header-title is-centered" }, [
+        _vm._v("\n                Report a User\n            ")
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-6233a116", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);
