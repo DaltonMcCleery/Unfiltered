@@ -15,6 +15,7 @@
                             CREATE A GAME
                         </h2>
                         @include('game.create')
+                        <br>
                     </div>
 
                     <div class="col-md-6">
