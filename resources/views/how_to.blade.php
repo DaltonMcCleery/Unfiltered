@@ -98,6 +98,7 @@
                         <p>
                             You can read more about Game/Room codes and Public vs Private games below!
                         </p>
+                        <small style="color: orange;">Currently, this App is in Beta and only approved Users may create Games - #sorrynotsorry</small>
                     </div>
                     <br>
 

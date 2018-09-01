@@ -6,6 +6,7 @@
     </header>
     <div class="card-content">
         <div class="content">
+            @if (Auth::user()->role === 'admin')
             <form method="POST" action="{{ route('create.game') }}">
                 @csrf
 
@@ -80,6 +81,11 @@
                     </button>
                 </div>
             </form>
+            @else
+            <p>
+                Sorry, this App is currently in Beta and only approved Users can create Games - #sorrynotsorry
+            </p>
+            @endif
         </div>
     </div>
 </div>
