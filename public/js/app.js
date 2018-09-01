@@ -24954,7 +24954,7 @@ module.exports = Vue;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(14);
-module.exports = __webpack_require__(60);
+module.exports = __webpack_require__(63);
 
 
 /***/ }),
@@ -25009,7 +25009,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('available-games', __webpa
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('lobby', __webpack_require__(51));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('play-game', __webpack_require__(54));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('update-profile', __webpack_require__(57));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('report-user', __webpack_require__(62));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('report-user', __webpack_require__(60));
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app'
@@ -57865,9 +57865,9 @@ var render = function() {
     _vm.count !== 0
       ? _c(
           "div",
-          { staticClass: "columns is-desktop is-fluid" },
+          { staticClass: "row" },
           _vm._l(_vm.games, function(game) {
-            return _c("div", { staticClass: "column" }, [
+            return _c("div", { staticClass: "col-md-6" }, [
               _c("div", { staticClass: "card" }, [
                 _c("header", { staticClass: "card-header" }, [
                   _c("p", { staticClass: "card-header-title" }, [
@@ -57889,11 +57889,9 @@ var render = function() {
                       ),
                       _c("br"),
                       _vm._v(
-                        "\n                            Current Players: " +
-                          _vm._s(game.current_sessions) +
-                          " out of " +
+                        "\n                            Max: " +
                           _vm._s(game.max_sessions) +
-                          "\n                        "
+                          " Players\n                        "
                       )
                     ]),
                     _vm._v(" "),
@@ -59831,21 +59829,14 @@ if (false) {
 
 /***/ }),
 /* 60 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 61 */,
-/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(63)
+var __vue_script__ = __webpack_require__(61)
 /* template */
-var __vue_template__ = __webpack_require__(64)
+var __vue_template__ = __webpack_require__(62)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -59884,7 +59875,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 63 */
+/* 61 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59997,7 +59988,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 64 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -60129,6 +60120,12 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-6233a116", module.exports)
   }
 }
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

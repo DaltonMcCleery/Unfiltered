@@ -5,9 +5,9 @@
         <a @click="fetch()" class="button is-info">REFRESH LIST</a>
         <br><br>
 
-        <div class="columns is-desktop is-fluid" v-if="count !== 0">
+        <div class="row" v-if="count !== 0">
             <!-- Available Games (if any) -->
-            <div class="column" v-for="game in games">
+            <div class="col-md-6" v-for="game in games">
                 <div class="card">
                     <header class="card-header">
                         <p class="card-header-title">
@@ -19,7 +19,7 @@
                             <p>
                                 Host Ninja: {{ game.host.username }}
                                 <br>
-                                Current Players: {{ game.current_sessions }} out of {{ game.max_sessions }}
+                                Max: {{ game.max_sessions }} Players
                             </p>
                             <p v-if="authed_user_id === game.ninja_id">
                                 <a class="button is-danger is-outlined"> This is your Game!</a>
