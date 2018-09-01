@@ -26,6 +26,7 @@ Route::middleware(['api'])->group(function () {
         Route::post('destroy-game', 'GameController@closeGame');
         Route::post('close-lobby', 'GameController@closeLobby');
         Route::post('kick-player', 'GameController@kickPlayer');
+        Route::post('chat', 'GameController@chat');
     });
     Route::get('find/games', 'GameController@find');
 

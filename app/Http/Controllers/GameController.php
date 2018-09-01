@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\answerQuestion;
 use App\Events\closeLobby;
 use App\Events\kickPlayer;
+use App\Events\lobbyChat;
 use App\Events\startGame;
 use App\Events\joinLobby;
 use App\Events\matchWinner;
@@ -168,6 +169,15 @@ class GameController extends Controller
     }
 
     // ---> GAME
+
+    /**
+     * Post a Message in the Lobby's Chat
+     *
+     * @param Request $request
+     */
+    public function chat(Request $request) {
+        broadcast(new lobbyChat($request->session_id, $request->username, $request->message));
+    }
 
     /**
      * Kick a Player from the Lobby Channel
