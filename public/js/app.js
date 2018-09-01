@@ -58067,6 +58067,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             count: 1,
             users: [],
             lobby_game: {},
+            starting: null,
             endpoint: "/api/game/"
         };
     },
@@ -58111,6 +58112,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.leaveLobby(data.user);
             }
         }).listen('closeLobby', function (data) {
+            console.log('received close event');
             // Host has chosen to close the Lobby/Game
             _this.leaveLobby(_this.current_ninja);
         }).listen('startGame', function (data) {
@@ -58137,6 +58139,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         // User is leaving the Lobby
         leaveLobby: function leaveLobby(user) {
+            console.log(user);
             // Player has decided to leave the game
             this.users = _.remove(this.users, function (lobby_user) {
                 return lobby_user.username !== user;
@@ -58158,7 +58161,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         // Host requests to close the Lobby and delete the Game Session
         closeLobby: function closeLobby() {
             // Delete Game in DB
-            axios.post(this.endpoint + 'destroy-game', {
+            axios.post(this.endpoint + 'close-lobby', {
                 session_id: this.lobby_game.session_id
             });
         },
@@ -58166,12 +58169,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         // Host has requested to Start the Game with the current Lobby Players
         startGame: function startGame() {
+            var _this2 = this;
+
             axios.post(this.endpoint + 'start', {
                 session_id: this.lobby_game.session_id
             }).then(function (_ref) {
                 var data = _ref.data;
 
-                console.log('Starting Game...');
+                _this2.starting = true;
             });
         }
     }

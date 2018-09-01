@@ -53,6 +53,7 @@
                 count: 1,
                 users: [],
                 lobby_game: {},
+                starting: null,
                 endpoint: "/api/game/"
             };
         },
@@ -101,6 +102,7 @@
                     }
                 })
                 .listen('closeLobby', (data) => {
+                    console.log('received close event');
                     // Host has chosen to close the Lobby/Game
                     this.leaveLobby(this.current_ninja);
                 })
@@ -127,6 +129,7 @@
 
             // User is leaving the Lobby
             leaveLobby(user) {
+                console.log(user);
                 // Player has decided to leave the game
                 this.users = _.remove(this.users, function(lobby_user) {
                     return lobby_user.username !== user;
@@ -147,7 +150,7 @@
             // Host requests to close the Lobby and delete the Game Session
             closeLobby() {
                 // Delete Game in DB
-                axios.post(this.endpoint+'destroy-game', {
+                axios.post(this.endpoint+'close-lobby', {
                     session_id: this.lobby_game.session_id
                 });
             },
@@ -158,7 +161,7 @@
                         session_id: this.lobby_game.session_id
                     })
                     .then(({data}) => {
-                        console.log('Starting Game...')
+                        this.starting = true;
                     });
             }
         }
