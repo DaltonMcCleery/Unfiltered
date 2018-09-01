@@ -58060,6 +58060,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58067,6 +58096,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             count: 1,
             users: [],
             lobby_game: {},
+            chat: [],
+            chat_message: null,
             starting: null,
             endpoint: "/api/game/"
         };
@@ -58106,13 +58137,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             env.count = env.count + 1;
         }).leaving(function (user) {
             _this.leaveLobby(user);
+        }).listen('lobbyChat', function (data) {
+            // Player has posted in Chat
+            _this.chat.push({
+                username: data.username,
+                message: data.message
+            });
         }).listen('kickPlayer', function (data) {
             // Host has kicked a Player
             if (data.user === _this.current_ninja) {
                 _this.leaveLobby(data.user);
             }
         }).listen('closeLobby', function (data) {
-            console.log('received close event');
             // Host has chosen to close the Lobby/Game
             _this.leaveLobby(_this.current_ninja);
         }).listen('startGame', function (data) {
@@ -58178,6 +58214,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                 _this2.starting = true;
             });
+        },
+
+
+        // Post a Message in the Lobby Chat
+        chatMessage: function chatMessage() {
+            var _this3 = this;
+
+            axios.post(this.endpoint + 'chat', {
+                session_id: this.lobby_game.session_id,
+                username: this.current_ninja,
+                message: this.chat_message
+            }).then(function (_ref2) {
+                var data = _ref2.data;
+
+                _this3.chat_message = null;
+            });
         }
     }
 });
@@ -58191,108 +58243,208 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { attrs: { id: "game_lobby" } }, [
-    _c(
-      "nav",
-      { staticClass: "panel is-dark" },
-      [
-        _c("p", { staticClass: "panel-heading" }, [
-          _vm._v(
-            "\n            " +
-              _vm._s(_vm.count) +
-              " Users in Lobby (of " +
-              _vm._s(_vm.lobby_game.max_sessions) +
-              ")\n        "
-          )
-        ]),
-        _vm._v(" "),
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-6" }, [
         _c(
-          "div",
-          {
-            staticClass: "panel-block is-active",
-            staticStyle: { color: "deepskyblue" }
-          },
+          "nav",
+          { staticClass: "panel is-dark" },
           [
-            _vm._v(
-              '\n            "' +
-                _vm._s(_vm.current_ninja) +
-                '" (You)\n        '
-            )
-          ]
-        ),
-        _vm._v(" "),
-        _vm._l(_vm.users, function(user) {
-          return _c(
-            "div",
-            { staticClass: "panel-block", staticStyle: { color: "white" } },
-            [
+            _c("p", { staticClass: "panel-heading" }, [
               _vm._v(
-                '\n            "' + _vm._s(user.username) + '"\n            '
-              ),
-              _vm.current_ninja === _vm.lobby_game.host.username
-                ? _c("span", [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "button is-danger",
-                        staticStyle: { color: "white", "margin-left": "10px" },
-                        on: {
-                          click: function($event) {
-                            _vm.kickPlayer(user)
-                          }
+                "\n                    " +
+                  _vm._s(_vm.count) +
+                  " Users in Lobby (of " +
+                  _vm._s(_vm.lobby_game.max_sessions) +
+                  ")\n                "
+              )
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "panel-block is-active",
+                staticStyle: { color: "deepskyblue" }
+              },
+              [
+                _vm._v(
+                  '\n                    "' +
+                    _vm._s(_vm.current_ninja) +
+                    '" (You)\n                '
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _vm._l(_vm.users, function(user) {
+              return _c(
+                "div",
+                { staticClass: "panel-block", staticStyle: { color: "white" } },
+                [
+                  _vm._v(
+                    '\n                    "' +
+                      _vm._s(user.username) +
+                      '"\n                    '
+                  ),
+                  _vm.current_ninja === _vm.lobby_game.host.username
+                    ? _c("span", [
+                        _c(
+                          "a",
+                          {
+                            staticClass: "button is-danger",
+                            staticStyle: {
+                              color: "white",
+                              "margin-left": "10px"
+                            },
+                            on: {
+                              click: function($event) {
+                                _vm.kickPlayer(user)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                            Kick\n                        "
+                            )
+                          ]
+                        )
+                      ])
+                    : _vm._e()
+                ]
+              )
+            }),
+            _vm._v(" "),
+            _vm.current_ninja === _vm.lobby_game.host.username
+              ? _c("div", { staticClass: "panel-block" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass: "button is-success is-medium is-fullwidth",
+                      staticStyle: { color: "white" },
+                      on: { click: _vm.startGame }
+                    },
+                    [
+                      _vm._v(
+                        "\n                        Start Game\n                    "
+                      )
+                    ]
+                  )
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.current_ninja === _vm.lobby_game.host.username
+              ? _c("div", { staticClass: "panel-block" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "button is-danger is-outlined is-medium is-fullwidth",
+                      on: { click: _vm.closeLobby }
+                    },
+                    [
+                      _vm._v(
+                        "\n                        Close Lobby\n                    "
+                      )
+                    ]
+                  )
+                ])
+              : _c("div", { staticClass: "panel-block" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "button is-danger is-outlined is-medium is-fullwidth",
+                      on: {
+                        click: function($event) {
+                          _vm.leaveLobby(_vm.current_ninja)
                         }
-                      },
-                      [_vm._v("\n                    Kick\n                ")]
-                    )
-                  ])
-                : _vm._e()
-            ]
-          )
-        }),
-        _vm._v(" "),
-        _vm.current_ninja === _vm.lobby_game.host.username
-          ? _c("div", { staticClass: "panel-block" }, [
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                        Leave Lobby\n                    "
+                      )
+                    ]
+                  )
+                ])
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-6" }, [
+        _c(
+          "nav",
+          { staticClass: "panel is-dark" },
+          [
+            _c("p", { staticClass: "panel-heading" }, [
+              _vm._v("\n                    Lobby Chat\n                ")
+            ]),
+            _vm._v(" "),
+            _vm._l(_vm.chat, function(object) {
+              return _c(
+                "div",
+                { staticClass: "panel-block", staticStyle: { color: "white" } },
+                [
+                  _vm._v(
+                    '\n                    "' +
+                      _vm._s(object.username) +
+                      '": ' +
+                      _vm._s(object.message) +
+                      "\n                "
+                  )
+                ]
+              )
+            }),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v(" "),
+            _c("div", { staticClass: "panel-block" }, [
               _c(
-                "a",
-                {
-                  staticClass: "button is-success is-medium is-fullwidth",
-                  staticStyle: { color: "white" },
-                  on: { click: _vm.startGame }
-                },
-                [_vm._v("\n                Start Game\n            ")]
+                "p",
+                { staticClass: "control" },
+                [
+                  _c(
+                    "b-field",
+                    [
+                      _c("b-input", {
+                        staticClass: "is-fullwidth",
+                        attrs: { maxlength: "50", type: "textarea" },
+                        model: {
+                          value: _vm.chat_message,
+                          callback: function($$v) {
+                            _vm.chat_message = $$v
+                          },
+                          expression: "chat_message"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "button is-link is-outlined is-fullwidth",
+                      on: {
+                        click: function($event) {
+                          _vm.chatMessage()
+                        }
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                            Post Message\n                        "
+                      )
+                    ]
+                  )
+                ],
+                1
               )
             ])
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.current_ninja === _vm.lobby_game.host.username
-          ? _c("div", { staticClass: "panel-block" }, [
-              _c(
-                "a",
-                {
-                  staticClass:
-                    "button is-danger is-outlined is-medium is-fullwidth",
-                  on: { click: _vm.closeLobby }
-                },
-                [_vm._v("\n                Close Lobby\n            ")]
-              )
-            ])
-          : _c("div", { staticClass: "panel-block" }, [
-              _c(
-                "a",
-                {
-                  staticClass:
-                    "button is-danger is-outlined is-medium is-fullwidth",
-                  on: {
-                    click: function($event) {
-                      _vm.leaveLobby(_vm.current_ninja)
-                    }
-                  }
-                },
-                [_vm._v("\n                Leave Lobby\n            ")]
-              )
-            ])
-      ],
-      2
-    )
+          ],
+          2
+        )
+      ])
+    ])
   ])
 }
 var staticRenderFns = []

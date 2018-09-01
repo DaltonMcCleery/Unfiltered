@@ -2,46 +2,75 @@
 
     <div id="game_lobby">
 
-        <nav class="panel is-dark">
-            <p class="panel-heading">
-                {{ count }} Users in Lobby (of {{ lobby_game.max_sessions }})
-            </p>
-            <!--<p class="panel-tabs">-->
-                <!--<a class="is-active">all</a>-->
-                <!--<a>public</a>-->
-                <!--<a>private</a>-->
-                <!--<a>sources</a>-->
-                <!--<a>forks</a>-->
-            <!--</p>-->
-            <div class="panel-block is-active" style="color: deepskyblue;">
-                "{{ current_ninja }}" (You)
+        <div class="row">
+            <!-- Lobby List -->
+            <div class="col-md-6">
+                <nav class="panel is-dark">
+                    <p class="panel-heading">
+                        {{ count }} Users in Lobby (of {{ lobby_game.max_sessions }})
+                    </p>
+                    <!--<p class="panel-tabs">-->
+                        <!--<a class="is-active">all</a>-->
+                        <!--<a>public</a>-->
+                        <!--<a>private</a>-->
+                        <!--<a>sources</a>-->
+                        <!--<a>forks</a>-->
+                    <!--</p>-->
+                    <div class="panel-block is-active" style="color: deepskyblue;">
+                        "{{ current_ninja }}" (You)
+                    </div>
+                    <div class="panel-block" v-for="user in users" style="color: white">
+                        "{{ user.username }}"
+                        <span v-if="current_ninja === lobby_game.host.username">
+                            <a @click="kickPlayer(user)" class="button is-danger" style="color: white; margin-left: 10px;">
+                                Kick
+                            </a>
+                        </span>
+                    </div>
+                    <!-- Host Options -->
+                    <div class="panel-block" v-if="current_ninja === lobby_game.host.username">
+                        <a @click="startGame" class="button is-success is-medium is-fullwidth" style="color: white;">
+                            Start Game
+                        </a>
+                    </div>
+                    <div class="panel-block" v-if="current_ninja === lobby_game.host.username">
+                        <a @click="closeLobby" class="button is-danger is-outlined is-medium is-fullwidth">
+                            Close Lobby
+                        </a>
+                    </div>
+                    <!-- Guest Options -->
+                    <div class="panel-block" v-else>
+                        <a @click="leaveLobby(current_ninja)" class="button is-danger is-outlined is-medium is-fullwidth">
+                            Leave Lobby
+                        </a>
+                    </div>
+                </nav>
             </div>
-            <div class="panel-block" v-for="user in users" style="color: white">
-                "{{ user.username }}"
-                <span v-if="current_ninja === lobby_game.host.username">
-                    <a @click="kickPlayer(user)" class="button is-danger" style="color: white; margin-left: 10px;">
-                        Kick
-                    </a>
-                </span>
+
+            <!-- Chat -->
+            <div class="col-md-6">
+                <nav class="panel is-dark">
+                    <p class="panel-heading">
+                        Lobby Chat
+                    </p>
+                    <div class="panel-block" v-for="object in chat" style="color: white">
+                        "{{ object.username }}": {{ object.message }}
+                    </div>
+                    <br>
+                    <!-- Post Message -->
+                    <div class="panel-block">
+                        <p class="control">
+                            <b-field>
+                                <b-input class="is-fullwidth" maxlength="50" type="textarea" v-model="chat_message"></b-input>
+                            </b-field>
+                            <button @click="chatMessage()" class="button is-link is-outlined is-fullwidth">
+                                Post Message
+                            </button>
+                        </p>
+                    </div>
+                </nav>
             </div>
-            <!-- Host Options -->
-            <div class="panel-block" v-if="current_ninja === lobby_game.host.username">
-                <a @click="startGame" class="button is-success is-medium is-fullwidth" style="color: white;">
-                    Start Game
-                </a>
-            </div>
-            <div class="panel-block" v-if="current_ninja === lobby_game.host.username">
-                <a @click="closeLobby" class="button is-danger is-outlined is-medium is-fullwidth">
-                    Close Lobby
-                </a>
-            </div>
-            <!-- Guest Options -->
-            <div class="panel-block" v-else>
-                <a @click="leaveLobby(current_ninja)" class="button is-danger is-outlined is-medium is-fullwidth">
-                    Leave Lobby
-                </a>
-            </div>
-        </nav>
+        </div>
     </div>
 
 </template>
@@ -53,6 +82,8 @@
                 count: 1,
                 users: [],
                 lobby_game: {},
+                chat: [],
+                chat_message: null,
                 starting: null,
                 endpoint: "/api/game/"
             };
@@ -95,6 +126,13 @@
                 .leaving((user) => {
                     this.leaveLobby(user)
                 })
+                .listen('lobbyChat', (data) => {
+                    // Player has posted in Chat
+                    this.chat.push({
+                        username: data.username,
+                        message: data.message
+                    });
+                })
                 .listen('kickPlayer', (data) => {
                     // Host has kicked a Player
                     if (data.user === this.current_ninja) {
@@ -102,7 +140,6 @@
                     }
                 })
                 .listen('closeLobby', (data) => {
-                    console.log('received close event');
                     // Host has chosen to close the Lobby/Game
                     this.leaveLobby(this.current_ninja);
                 })
@@ -163,6 +200,19 @@
                     .then(({data}) => {
                         this.starting = true;
                     });
+            },
+
+            // Post a Message in the Lobby Chat
+            chatMessage() {
+                axios.post(this.endpoint+'chat', {
+                        session_id: this.lobby_game.session_id,
+                        username: this.current_ninja,
+                        message: this.chat_message
+                    })
+                    .then(({data}) => {
+                        this.chat_message = null;
+                    });
+
             }
         }
     };
