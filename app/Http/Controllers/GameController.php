@@ -32,7 +32,7 @@ class GameController extends Controller
      *
      * @param Request $request
      */
-    public function kickPlayer(Request $request) {
+    public function kickLobbyPlayer(Request $request) {
         // Broadcast to all players in Lobby to go to the Game page
         broadcast(new kickPlayer($request->username, $request->session_id));
     }
