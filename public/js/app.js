@@ -57802,6 +57802,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -57889,7 +57891,9 @@ var render = function() {
                       ),
                       _c("br"),
                       _vm._v(
-                        "\n                            Max: " +
+                        "\n                            " +
+                          _vm._s(game.current_sessions) +
+                          " of " +
                           _vm._s(game.max_sessions) +
                           " Players\n                        "
                       )
@@ -57939,10 +57943,12 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("div", { staticClass: "card-content" }, [
           _c("div", { staticClass: "content" }, [
-            _c("p", [
-              _vm._v(
-                "\n                            Refresh the List or Create your own Game!\n                        "
-              )
+            _c("article", { staticClass: "message is-info" }, [
+              _c("div", { staticClass: "message-body" }, [
+                _vm._v(
+                  "\n                                Refresh the List or Create your own Game!\n                            "
+                )
+              ])
             ])
           ])
         ])
@@ -58129,14 +58135,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     env.count = env.count + 1;
                 }
             });
+            _this.updateSessions();
         }).joining(function (user) {
             env.users.push({
                 username: user.username
             });
 
             env.count = env.count + 1;
+            _this.updateSessions();
         }).leaving(function (user) {
             _this.leaveLobby(user);
+            _this.updateSessions();
         }).listen('lobbyChat', function (data) {
             // Player has posted in Chat
             _this.chat.push({
@@ -58145,9 +58154,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         }).listen('kickPlayer', function (data) {
             // Host has kicked a Player
-            if (data.user === _this.current_ninja) {
-                _this.leaveLobby(data.user);
-            }
+            _this.leaveLobby(data.user);
+            _this.updateSessions();
         }).listen('closeLobby', function (data) {
             // Host has chosen to close the Lobby/Game
             _this.leaveLobby(_this.current_ninja);
@@ -58163,6 +58171,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
 
+        // Updates DB count of current players in Lobby
+        updateSessions: function updateSessions() {
+            axios.post(this.endpoint + 'kick-player', {
+                session_id: this.lobby_game.session_id,
+                current_sessions: this.count
+            });
+        },
+
+
         // Host requests to Kick a Player
         kickPlayer: function kickPlayer(user) {
             // Redirect Player to Find Game page
@@ -58175,7 +58192,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         // User is leaving the Lobby
         leaveLobby: function leaveLobby(user) {
-            console.log(user);
             // Player has decided to leave the game
             this.users = _.remove(this.users, function (lobby_user) {
                 return lobby_user.username !== user;
@@ -58189,8 +58205,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 });
             }
 
-            // Redirect to Find Game page
-            window.location.href = '/play';
+            if (user === this.current_ninja) {
+                // Redirect to Find Game page
+                window.location.href = '/play';
+            }
         },
 
 
@@ -58382,7 +58400,14 @@ var render = function() {
             _vm._l(_vm.chat, function(object) {
               return _c(
                 "div",
-                { staticClass: "panel-block", staticStyle: { color: "white" } },
+                {
+                  staticClass: "panel-block",
+                  staticStyle: {
+                    color: "white",
+                    overflow: "scroll",
+                    height: "auto"
+                  }
+                },
                 [
                   _vm._v(
                     '\n                    "' +

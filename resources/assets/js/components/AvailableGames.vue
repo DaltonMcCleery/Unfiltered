@@ -19,7 +19,7 @@
                             <p>
                                 Host Ninja: {{ game.host.username }}
                                 <br>
-                                Max: {{ game.max_sessions }} Players
+                                {{ game.current_sessions }} of {{ game.max_sessions }} Players
                             </p>
                             <p v-if="authed_user_id === game.ninja_id">
                                 <a class="button is-danger is-outlined"> This is your Game!</a>
@@ -45,9 +45,11 @@
                     </header>
                     <div class="card-content">
                         <div class="content">
-                            <p>
-                                Refresh the List or Create your own Game!
-                            </p>
+                            <article class="message is-info">
+                                <div class="message-body">
+                                    Refresh the List or Create your own Game!
+                                </div>
+                            </article>
                         </div>
                     </div>
                 </div>

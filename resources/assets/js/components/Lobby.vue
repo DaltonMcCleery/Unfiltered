@@ -53,7 +53,7 @@
                     <p class="panel-heading">
                         Lobby Chat
                     </p>
-                    <div class="panel-block" v-for="object in chat" style="color: white">
+                    <div class="panel-block" v-for="object in chat" style="color: white; overflow: scroll; height: auto;">
                         "{{ object.username }}": {{ object.message }}
                     </div>
                     <br>
@@ -114,7 +114,7 @@
                             env.count = env.count + 1;
                         }
                     });
-
+                    this.updateSessions();
                 })
                 .joining((user) => {
                     env.users.push({
@@ -122,9 +122,11 @@
                     });
 
                     env.count = env.count + 1;
+                    this.updateSessions();
                 })
                 .leaving((user) => {
-                    this.leaveLobby(user)
+                    this.leaveLobby(user);
+                    this.updateSessions();
                 })
                 .listen('lobbyChat', (data) => {
                     // Player has posted in Chat
@@ -135,9 +137,8 @@
                 })
                 .listen('kickPlayer', (data) => {
                     // Host has kicked a Player
-                    if (data.user === this.current_ninja) {
-                        this.leaveLobby(data.user);
-                    }
+                    this.leaveLobby(data.user);
+                    this.updateSessions();
                 })
                 .listen('closeLobby', (data) => {
                     // Host has chosen to close the Lobby/Game
@@ -155,6 +156,14 @@
 
         methods: {
 
+            // Updates DB count of current players in Lobby
+            updateSessions() {
+                axios.post(this.endpoint+'kick-player', {
+                    session_id: this.lobby_game.session_id,
+                    current_sessions: this.count
+                });
+            },
+
             // Host requests to Kick a Player
             kickPlayer(user) {
                 // Redirect Player to Find Game page
@@ -166,7 +175,6 @@
 
             // User is leaving the Lobby
             leaveLobby(user) {
-                console.log(user);
                 // Player has decided to leave the game
                 this.users = _.remove(this.users, function(lobby_user) {
                     return lobby_user.username !== user;
@@ -180,8 +188,10 @@
                     });
                 }
 
-                // Redirect to Find Game page
-                window.location.href = '/play';
+                if (user === this.current_ninja) {
+                    // Redirect to Find Game page
+                    window.location.href = '/play';
+                }
             },
 
             // Host requests to close the Lobby and delete the Game Session
