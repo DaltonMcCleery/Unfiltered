@@ -58105,6 +58105,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58115,6 +58116,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             chat: null,
             chat_message: null,
             starting: null,
+            session_error: false,
             endpoint: "/api/game/"
         };
     },
@@ -58167,8 +58169,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 message: data.message
             });
         }).listen('kickPlayer', function (data) {
+            console.log(data);
             // Host has kicked a Player
-            _this.leaveLobby(data.user);
+            _this.leaveLobby(data.user.username);
             _this.updateSessions();
         }).listen('closeLobby', function (data) {
             // Host has chosen to close the Lobby/Game
@@ -58239,13 +58242,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         startGame: function startGame() {
             var _this2 = this;
 
-            axios.post(this.endpoint + 'start', {
-                session_id: this.lobby_game.session_id
-            }).then(function (_ref) {
-                var data = _ref.data;
+            // Min of 3 players must be in the Lobby to start
+            if (this.count < 3) {
+                this.session_error = true;
+            } else {
+                axios.post(this.endpoint + 'start', {
+                    session_id: this.lobby_game.session_id
+                }).then(function (_ref) {
+                    var data = _ref.data;
 
-                _this2.starting = true;
-            });
+                    _this2.starting = true;
+                });
+            }
         },
 
 
@@ -58276,177 +58284,153 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { attrs: { id: "game_lobby" } }, [
     _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-md-6" }, [
-        _c(
-          "nav",
-          { staticClass: "panel is-dark" },
-          [
-            _c("p", { staticClass: "panel-heading" }, [
-              _vm._v(
-                "\n                    " +
-                  _vm._s(_vm.count) +
-                  " Users in Lobby (of " +
-                  _vm._s(_vm.lobby_game.max_sessions) +
-                  ")\n                "
-              )
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "panel-block is-active",
-                staticStyle: { color: "deepskyblue" }
-              },
-              [
+      _c(
+        "div",
+        { staticClass: "col-md-6" },
+        [
+          _c(
+            "nav",
+            { staticClass: "panel is-dark" },
+            [
+              _c("p", { staticClass: "panel-heading" }, [
                 _vm._v(
-                  '\n                    "' +
-                    _vm._s(_vm.current_ninja) +
-                    '" (You)\n                '
+                  "\n                    " +
+                    _vm._s(_vm.count) +
+                    " Users in Lobby (of " +
+                    _vm._s(_vm.lobby_game.max_sessions) +
+                    ")\n                "
                 )
-              ]
-            ),
-            _vm._v(" "),
-            _vm._l(_vm.users, function(user) {
-              return _c(
+              ]),
+              _vm._v(" "),
+              _c(
                 "div",
-                { staticClass: "panel-block", staticStyle: { color: "white" } },
+                {
+                  staticClass: "panel-block is-active",
+                  staticStyle: { color: "deepskyblue" }
+                },
                 [
                   _vm._v(
                     '\n                    "' +
-                      _vm._s(user.username) +
-                      '"\n                    '
-                  ),
-                  _vm.current_ninja === _vm.lobby_game.host.username
-                    ? _c("span", [
-                        _c(
-                          "a",
-                          {
-                            staticClass: "button is-danger",
-                            staticStyle: {
-                              color: "white",
-                              "margin-left": "10px"
-                            },
-                            on: {
-                              click: function($event) {
-                                _vm.kickPlayer(user)
-                              }
-                            }
-                          },
-                          [
-                            _vm._v(
-                              "\n                            Kick\n                        "
-                            )
-                          ]
-                        )
-                      ])
-                    : _vm._e()
+                      _vm._s(_vm.current_ninja) +
+                      '" (You)\n                '
+                  )
                 ]
-              )
-            }),
-            _vm._v(" "),
-            _vm.current_ninja === _vm.lobby_game.host.username
-              ? _c("div", { staticClass: "panel-block" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "button is-success is-medium is-fullwidth",
-                      staticStyle: { color: "white" },
-                      on: { click: _vm.startGame }
-                    },
-                    [
-                      _vm._v(
-                        "\n                        Start Game\n                    "
-                      )
-                    ]
-                  )
-                ])
-              : _vm._e(),
-            _vm._v(" "),
-            _vm.current_ninja === _vm.lobby_game.host.username
-              ? _c("div", { staticClass: "panel-block" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "button is-danger is-outlined is-medium is-fullwidth",
-                      on: { click: _vm.closeLobby }
-                    },
-                    [
-                      _vm._v(
-                        "\n                        Close Lobby\n                    "
-                      )
-                    ]
-                  )
-                ])
-              : _c("div", { staticClass: "panel-block" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "button is-danger is-outlined is-medium is-fullwidth",
-                      on: {
-                        click: function($event) {
-                          _vm.leaveLobby(_vm.current_ninja)
-                        }
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                        Leave Lobby\n                    "
-                      )
-                    ]
-                  )
-                ])
-          ],
-          2
-        ),
-        _vm._v(" "),
-        _c("nav", { staticClass: "panel is-dark" }, [
-          _c("div", { staticClass: "panel-block" }, [
-            _c(
-              "p",
-              { staticClass: "control" },
-              [
-                _c(
-                  "b-field",
-                  [
-                    _c("b-input", {
-                      staticClass: "is-fullwidth",
-                      attrs: { maxlength: "50", type: "textarea" },
-                      model: {
-                        value: _vm.chat_message,
-                        callback: function($$v) {
-                          _vm.chat_message = $$v
-                        },
-                        expression: "chat_message"
-                      }
-                    })
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c(
-                  "button",
+              ),
+              _vm._v(" "),
+              _vm._l(_vm.users, function(user) {
+                return _c(
+                  "div",
                   {
-                    staticClass: "button is-info is-inverted is-fullwidth",
-                    on: {
-                      click: function($event) {
-                        _vm.chatMessage()
-                      }
-                    }
+                    staticClass: "panel-block",
+                    staticStyle: { color: "white" }
                   },
                   [
                     _vm._v(
-                      "\n                            Post Chat Message\n                        "
-                    )
+                      '\n                    "' +
+                        _vm._s(user.username) +
+                        '"\n                    '
+                    ),
+                    _vm.current_ninja === _vm.lobby_game.host.username
+                      ? _c("span", [
+                          _c(
+                            "a",
+                            {
+                              staticClass: "button is-danger",
+                              staticStyle: {
+                                color: "white",
+                                "margin-left": "10px"
+                              },
+                              on: {
+                                click: function($event) {
+                                  _vm.kickPlayer(user)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                            Kick\n                        "
+                              )
+                            ]
+                          )
+                        ])
+                      : _vm._e()
                   ]
                 )
-              ],
-              1
-            )
-          ])
-        ])
-      ]),
+              }),
+              _vm._v(" "),
+              _vm.current_ninja === _vm.lobby_game.host.username
+                ? _c("div", { staticClass: "panel-block" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "button is-success is-medium is-fullwidth",
+                        staticStyle: { color: "white" },
+                        on: { click: _vm.startGame }
+                      },
+                      [
+                        _vm._v(
+                          "\n                        Start Game\n                    "
+                        )
+                      ]
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.current_ninja === _vm.lobby_game.host.username
+                ? _c("div", { staticClass: "panel-block" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "button is-danger is-outlined is-medium is-fullwidth",
+                        on: { click: _vm.closeLobby }
+                      },
+                      [
+                        _vm._v(
+                          "\n                        Close Lobby\n                    "
+                        )
+                      ]
+                    )
+                  ])
+                : _c("div", { staticClass: "panel-block" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "button is-danger is-outlined is-medium is-fullwidth",
+                        on: {
+                          click: function($event) {
+                            _vm.leaveLobby(_vm.current_ninja)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                        Leave Lobby\n                    "
+                        )
+                      ]
+                    )
+                  ])
+            ],
+            2
+          ),
+          _vm._v(" "),
+          _vm.session_error
+            ? _c(
+                "b-message",
+                { attrs: { title: "Error", type: "is-danger" } },
+                [
+                  _vm._v(
+                    "\n                You cannot start a game with less than 3 people!\n            "
+                  )
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _c("br")
+        ],
+        1
+      ),
       _vm._v(" "),
       _c("div", { staticClass: "col-md-6" }, [
         _c("nav", { staticClass: "panel is-dark" }, [
@@ -58493,7 +58477,51 @@ var render = function() {
                     )
                   ]
                 )
-              ])
+              ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "panel-block" }, [
+            _c(
+              "p",
+              { staticClass: "control" },
+              [
+                _c(
+                  "b-field",
+                  [
+                    _c("b-input", {
+                      staticClass: "is-fullwidth",
+                      attrs: { maxlength: "200", type: "textarea" },
+                      model: {
+                        value: _vm.chat_message,
+                        callback: function($$v) {
+                          _vm.chat_message = $$v
+                        },
+                        expression: "chat_message"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "button is-info is-inverted is-fullwidth",
+                    on: {
+                      click: function($event) {
+                        _vm.chatMessage()
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Post Chat Message\n                        "
+                    )
+                  ]
+                )
+              ],
+              1
+            )
+          ])
         ])
       ])
     ])

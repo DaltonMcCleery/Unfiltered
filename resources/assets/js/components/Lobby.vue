@@ -46,20 +46,10 @@
                         </a>
                     </div>
                 </nav>
-
-                <!-- Post Chat Message -->
-                <nav class="panel is-dark">
-                    <div class="panel-block">
-                        <p class="control">
-                            <b-field>
-                                <b-input class="is-fullwidth" maxlength="50" type="textarea" v-model="chat_message"></b-input>
-                            </b-field>
-                            <button @click="chatMessage()" class="button is-info is-inverted is-fullwidth">
-                                Post Chat Message
-                            </button>
-                        </p>
-                    </div>
-                </nav>
+                <b-message v-if="session_error" title="Error" type="is-danger">
+                    You cannot start a game with less than 3 people!
+                </b-message>
+                <br>
             </div>
 
             <!-- Chat -->
@@ -78,6 +68,17 @@
                             No chat messages - post a message in the chat to get the party started!
                         </div>
                     </div>
+                    <!-- Post Chat Message -->
+                    <div class="panel-block">
+                        <p class="control">
+                            <b-field>
+                                <b-input class="is-fullwidth" maxlength="200" type="textarea" v-model="chat_message"></b-input>
+                            </b-field>
+                            <button @click="chatMessage()" class="button is-info is-inverted is-fullwidth">
+                                Post Chat Message
+                            </button>
+                        </p>
+                    </div>
                 </nav>
             </div>
         </div>
@@ -95,6 +96,7 @@
                 chat: null,
                 chat_message: null,
                 starting: null,
+                session_error: false,
                 endpoint: "/api/game/"
             };
         },
@@ -150,8 +152,9 @@
                     });
                 })
                 .listen('kickPlayer', (data) => {
+                    console.log(data);
                     // Host has kicked a Player
-                    this.leaveLobby(data.user);
+                    this.leaveLobby(data.user.username);
                     this.updateSessions();
                 })
                 .listen('closeLobby', (data) => {
@@ -218,12 +221,17 @@
 
             // Host has requested to Start the Game with the current Lobby Players
             startGame() {
-                axios.post(this.endpoint+'start', {
+                // Min of 3 players must be in the Lobby to start
+                if (this.count < 3) {
+                    this.session_error = true;
+                } else {
+                    axios.post(this.endpoint + 'start', {
                         session_id: this.lobby_game.session_id
                     })
-                    .then(({data}) => {
-                        this.starting = true;
-                    });
+                        .then(({data}) => {
+                            this.starting = true;
+                        });
+                }
             },
 
             // Post a Message in the Lobby Chat
