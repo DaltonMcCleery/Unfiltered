@@ -58113,8 +58113,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             count: 1,
             users: [],
             lobby_game: {},
+            // Chat
             chat: null,
             chat_message: null,
+            // Host options
             starting: null,
             session_error: false,
             endpoint: "/api/game/"
@@ -58155,7 +58157,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             env.count = env.count + 1;
             _this.updateSessions();
         }).leaving(function (user) {
-            _this.leaveLobby(user);
+            _this.leaveLobby(user.username);
             _this.updateSessions();
         }).listen('lobbyChat', function (data) {
             // Check if Chat is empty/null
@@ -58169,7 +58171,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 message: data.message
             });
         }).listen('kickPlayer', function (data) {
-            console.log(data);
             // Host has kicked a Player
             _this.leaveLobby(data.user.username);
             _this.updateSessions();
@@ -58224,6 +58225,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             if (user === this.current_ninja) {
                 // Redirect to Find Game page
+                Echo.leave('lobby.' + this.lobby_game.session_id);
                 window.location.href = '/play';
             }
         },

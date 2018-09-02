@@ -93,8 +93,10 @@
                 count: 1,
                 users: [],
                 lobby_game: {},
+                // Chat
                 chat: null,
                 chat_message: null,
+                // Host options
                 starting: null,
                 session_error: false,
                 endpoint: "/api/game/"
@@ -136,7 +138,7 @@
                     this.updateSessions();
                 })
                 .leaving((user) => {
-                    this.leaveLobby(user);
+                    this.leaveLobby(user.username);
                     this.updateSessions();
                 })
                 .listen('lobbyChat', (data) => {
@@ -152,7 +154,6 @@
                     });
                 })
                 .listen('kickPlayer', (data) => {
-                    console.log(data);
                     // Host has kicked a Player
                     this.leaveLobby(data.user.username);
                     this.updateSessions();
@@ -207,6 +208,7 @@
 
                 if (user === this.current_ninja) {
                     // Redirect to Find Game page
+                    Echo.leave('lobby.'+this.lobby_game.session_id);
                     window.location.href = '/play';
                 }
             },
