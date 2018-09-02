@@ -82,9 +82,11 @@
                 </div>
             </form>
             @else
-            <p>
-                Sorry, this App is currently in Beta and only approved Users can create Games - #sorrynotsorry
-            </p>
+                <article class="message is-warning">
+                    <div class="message-body">
+                        Sorry, we're currently in Beta and only Admins can create Games <br> #sorrynotsorry
+                    </div>
+                </article>
             @endif
         </div>
     </div>

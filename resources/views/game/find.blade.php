@@ -23,10 +23,7 @@
                             <span class="icon is-medium">
                                 <i class="fas fa-plus-circle"></i>
                             </span>
-                            JOIN A GAME<br>
-                            <small style="color: orange;">
-                                <em>Requires Room Code</em>
-                            </small>
+                            JOIN A GAME
                         </h2>
                         @include('game.join')
                     </div>
