@@ -28,7 +28,8 @@ Route::middleware(['api'])->group(function () {
         Route::post('kick-player', 'GameController@kickPlayer');
         Route::post('chat', 'GameController@chat');
     });
-    Route::get('find/games', 'GameController@find');
+    Route::get('find/games', 'LobbyController@find');
+    Route::get('update/lobby', 'LobbyController@updateLobbySessions');
 
     // ---> Profile
     Route::prefix('profile')->group(function () {

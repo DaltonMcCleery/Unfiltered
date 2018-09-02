@@ -23,12 +23,12 @@ Route::middleware('ninja')->group(function () {
 
     // ---> GAME
     Route::prefix('play')->group(function () {
-        Route::get('/', 'GameController@index')->name('find.game');
-        Route::post('/join', 'GameController@joinPrivateGame')->name('join.game');
-        Route::get('/lobby/{session_id}', 'GameController@lobby')->name('game.lobby');
-        Route::get('/game/{session_id}', 'GameController@play')->name('play.game');
+        Route::get('/', 'LobbyController@index')->name('find.game');
+        Route::post('/join', 'LobbyController@joinPrivateGame')->name('join.game');
+        Route::get('/lobby/{session_id}', 'LobbyController@lobby')->name('game.lobby');
+        Route::get('/game/{session_id}', 'LobbyController@play')->name('play.game');
     });
-    Route::post('create/game', 'GameController@createGame')->name('create.game');
+    Route::post('create/game', 'LobbyController@createGame')->name('create.game');
 
     // ---> PROFILE
     Route::prefix('my-profile')->group(function () {
