@@ -5,6 +5,7 @@
         <div class="row">
             <!-- Lobby List -->
             <div class="col-md-6">
+                <!-- Players -->
                 <nav class="panel is-dark">
                     <p class="panel-heading">
                         {{ count }} Users in Lobby (of {{ lobby_game.max_sessions }})
@@ -45,6 +46,20 @@
                         </a>
                     </div>
                 </nav>
+
+                <!-- Post Chat Message -->
+                <nav class="panel is-dark">
+                    <div class="panel-block">
+                        <p class="control">
+                            <b-field>
+                                <b-input class="is-fullwidth" maxlength="50" type="textarea" v-model="chat_message"></b-input>
+                            </b-field>
+                            <button @click="chatMessage()" class="button is-info is-inverted is-fullwidth">
+                                Post Chat Message
+                            </button>
+                        </p>
+                    </div>
+                </nav>
             </div>
 
             <!-- Chat -->
@@ -53,20 +68,15 @@
                     <p class="panel-heading">
                         Lobby Chat
                     </p>
-                    <div class="panel-block" v-for="object in chat" style="color: white; overflow: scroll; height: auto;">
-                        "{{ object.username }}": {{ object.message }}
+                    <div v-if="chat">
+                        <div class="panel-block" v-for="object in chat" style="color: white; overflow: scroll; height: auto;">
+                            "{{ object.username }}": {{ object.message }}
+                        </div>
                     </div>
-                    <br>
-                    <!-- Post Message -->
-                    <div class="panel-block">
-                        <p class="control">
-                            <b-field>
-                                <b-input class="is-fullwidth" maxlength="50" type="textarea" v-model="chat_message"></b-input>
-                            </b-field>
-                            <button @click="chatMessage()" class="button is-link is-outlined is-fullwidth">
-                                Post Message
-                            </button>
-                        </p>
+                    <div v-else>
+                        <div class="panel-block" style="color: white;">
+                            No chat messages - post a message in the chat to get the party started!
+                        </div>
                     </div>
                 </nav>
             </div>
@@ -82,7 +92,7 @@
                 count: 1,
                 users: [],
                 lobby_game: {},
-                chat: [],
+                chat: null,
                 chat_message: null,
                 starting: null,
                 endpoint: "/api/game/"
@@ -114,7 +124,6 @@
                             env.count = env.count + 1;
                         }
                     });
-                    this.updateSessions();
                 })
                 .joining((user) => {
                     env.users.push({
@@ -129,6 +138,11 @@
                     this.updateSessions();
                 })
                 .listen('lobbyChat', (data) => {
+                    // Check if Chat is empty/null
+                    if (this.chat === null) {
+                        this.chat = [];
+                    }
+
                     // Player has posted in Chat
                     this.chat.push({
                         username: data.username,
@@ -158,7 +172,7 @@
 
             // Updates DB count of current players in Lobby
             updateSessions() {
-                axios.post(this.endpoint+'kick-player', {
+                axios.post('/api/update/lobby', {
                     session_id: this.lobby_game.session_id,
                     current_sessions: this.count
                 });

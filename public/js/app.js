@@ -58095,6 +58095,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58102,7 +58112,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             count: 1,
             users: [],
             lobby_game: {},
-            chat: [],
+            chat: null,
             chat_message: null,
             starting: null,
             endpoint: "/api/game/"
@@ -58135,7 +58145,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     env.count = env.count + 1;
                 }
             });
-            _this.updateSessions();
         }).joining(function (user) {
             env.users.push({
                 username: user.username
@@ -58147,6 +58156,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             _this.leaveLobby(user);
             _this.updateSessions();
         }).listen('lobbyChat', function (data) {
+            // Check if Chat is empty/null
+            if (_this.chat === null) {
+                _this.chat = [];
+            }
+
             // Player has posted in Chat
             _this.chat.push({
                 username: data.username,
@@ -58173,7 +58187,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         // Updates DB count of current players in Lobby
         updateSessions: function updateSessions() {
-            axios.post(this.endpoint + 'kick-player', {
+            axios.post('/api/update/lobby', {
                 session_id: this.lobby_game.session_id,
                 current_sessions: this.count
             });
@@ -58385,89 +58399,102 @@ var render = function() {
                 ])
           ],
           2
-        )
+        ),
+        _vm._v(" "),
+        _c("nav", { staticClass: "panel is-dark" }, [
+          _c("div", { staticClass: "panel-block" }, [
+            _c(
+              "p",
+              { staticClass: "control" },
+              [
+                _c(
+                  "b-field",
+                  [
+                    _c("b-input", {
+                      staticClass: "is-fullwidth",
+                      attrs: { maxlength: "50", type: "textarea" },
+                      model: {
+                        value: _vm.chat_message,
+                        callback: function($$v) {
+                          _vm.chat_message = $$v
+                        },
+                        expression: "chat_message"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "button is-info is-inverted is-fullwidth",
+                    on: {
+                      click: function($event) {
+                        _vm.chatMessage()
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Post Chat Message\n                        "
+                    )
+                  ]
+                )
+              ],
+              1
+            )
+          ])
+        ])
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "col-md-6" }, [
-        _c(
-          "nav",
-          { staticClass: "panel is-dark" },
-          [
-            _c("p", { staticClass: "panel-heading" }, [
-              _vm._v("\n                    Lobby Chat\n                ")
-            ]),
-            _vm._v(" "),
-            _vm._l(_vm.chat, function(object) {
-              return _c(
+        _c("nav", { staticClass: "panel is-dark" }, [
+          _c("p", { staticClass: "panel-heading" }, [
+            _vm._v("\n                    Lobby Chat\n                ")
+          ]),
+          _vm._v(" "),
+          _vm.chat
+            ? _c(
                 "div",
-                {
-                  staticClass: "panel-block",
-                  staticStyle: {
-                    color: "white",
-                    overflow: "scroll",
-                    height: "auto"
-                  }
-                },
-                [
-                  _vm._v(
-                    '\n                    "' +
-                      _vm._s(object.username) +
-                      '": ' +
-                      _vm._s(object.message) +
-                      "\n                "
-                  )
-                ]
-              )
-            }),
-            _vm._v(" "),
-            _c("br"),
-            _vm._v(" "),
-            _c("div", { staticClass: "panel-block" }, [
-              _c(
-                "p",
-                { staticClass: "control" },
-                [
-                  _c(
-                    "b-field",
-                    [
-                      _c("b-input", {
-                        staticClass: "is-fullwidth",
-                        attrs: { maxlength: "50", type: "textarea" },
-                        model: {
-                          value: _vm.chat_message,
-                          callback: function($$v) {
-                            _vm.chat_message = $$v
-                          },
-                          expression: "chat_message"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
+                _vm._l(_vm.chat, function(object) {
+                  return _c(
+                    "div",
                     {
-                      staticClass: "button is-link is-outlined is-fullwidth",
-                      on: {
-                        click: function($event) {
-                          _vm.chatMessage()
-                        }
+                      staticClass: "panel-block",
+                      staticStyle: {
+                        color: "white",
+                        overflow: "scroll",
+                        height: "auto"
                       }
                     },
                     [
                       _vm._v(
-                        "\n                            Post Message\n                        "
+                        '\n                        "' +
+                          _vm._s(object.username) +
+                          '": ' +
+                          _vm._s(object.message) +
+                          "\n                    "
                       )
                     ]
                   )
-                ],
-                1
+                })
               )
-            ])
-          ],
-          2
-        )
+            : _c("div", [
+                _c(
+                  "div",
+                  {
+                    staticClass: "panel-block",
+                    staticStyle: { color: "white" }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        No chat messages - post a message in the chat to get the party started!\n                    "
+                    )
+                  ]
+                )
+              ])
+        ])
       ])
     ])
   ])
