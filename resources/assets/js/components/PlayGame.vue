@@ -28,7 +28,7 @@
         <div v-else>
 
             <!-- Round Question -->
-            <section class="hero is-medium is-info is-bold">
+            <section class="hero is-small is-info is-bold">
                 <div class="hero-body">
 
                     <!-- Submitting a Question -->
@@ -87,12 +87,23 @@
             </section>
 
             <!-- Round Winner -->
-            <section class="hero is-danger" v-if="round_winner">
+            <section class="hero is-light is-bold" v-if="round_winner">
                 <div class="hero-body">
                     <div class="container">
                         <h1 class="title">
                             Round Winner: "{{ round_winner }}"
                         </h1>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Errors -->
+            <section class="hero is-danger" v-if="error">
+                <div class="hero-body">
+                    <div class="container">
+                        <h2 class="title">
+                            {{ error }}
+                        </h2>
                     </div>
                 </div>
             </section>
@@ -126,11 +137,24 @@
                         </div>
                     </div>
 
-                    <!-- Question Ninja is waiting for answers -->
+                    <!-- waiting for answers -->
                     <div class="container" align="center" v-else>
-                        <b-message type="is-info" has-icon>
-                            Waiting on All Ninja's to answer...
-                        </b-message>
+                        <!-- Question Ninja is waiting for answers -->
+                        <div v-if="question_ninja === current_ninja">
+                            <div v-if="!question">
+                                <b-message type="is-info" has-icon>
+                                    Waiting on All Ninja's to answer...
+                                </b-message>
+                            </div>
+                        </div>
+                        <!-- Other Ninja who has answered and waiting for all other Ninjas -->
+                        <div v-else>
+                            <div v-if="!canAnswer">
+                                <b-message type="is-info" has-icon>
+                                    Waiting on All Ninja's to answer...
+                                </b-message>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Answering a Question -->
@@ -140,7 +164,7 @@
                             <!-- Answer Form -->
                             <form method="post" @submit.prevent="answerQuestion">
                                 <fieldset>
-                                    <b-field label="Your Answer" style="color: white">
+                                    <b-field label="Your Answer">
                                         <b-input maxlength="200" type="textarea" v-model="answer"
                                                  placeholder="Write an unfiltered and hilarious answer to your Question Ninja!">
                                         </b-input>
@@ -196,6 +220,7 @@
                 rounds_won: 0,
                 round_winner: null,
                 match_winner: null,
+                error: null,
                 // Game Timers
                 timerObject: null,
                 timer: 90,
@@ -246,7 +271,21 @@
                     env.count = env.count + 1;
                 })
                 .leaving((user) => {
-                    // todo
+                    // Player has decided to leave the game
+                    this.users = _.remove(this.users, function(lobby_user) {
+                        return lobby_user.username !== user.username;
+                    });
+                    this.count = this.count - 1;
+
+                    if (this.count === 0) {
+                        // Destroy Game
+                        axios.post(this.endpoint+'destroy-game', {
+                            session_id: this.lobby_game.session_id
+                        });
+                    }
+                })
+                .listen('newQuestionNinja', (data) => {
+                    this.newQuestionNinja(data.username);
                 })
                 .listen('newQuestion', (data) => {
                     this.newQuestion(data.question)
@@ -276,6 +315,7 @@
         // Leave Lobby Event Channel before the Vue Component is destroyed
         beforeDestroy() {
             Echo.leave('lobby.'+this.lobby_game.session_id);
+            this.leaveGame();
         },
 
         methods: {
@@ -283,6 +323,7 @@
             start() {
                 // Pick which User goes First (Host)
                 this.question_ninja = this.lobby_game.host.username;
+                this.error = null;
 
                 // Initialize and Start the Game
                 if (this.question_ninja === this.current_ninja) {
@@ -326,6 +367,7 @@
                 this.users = _.remove(this.users, function(lobby_user) {
                     return lobby_user.username !== env.current_ninja;
                 });
+
                 this.count = this.count - 1;
 
                 // Check if Last User left
@@ -333,6 +375,18 @@
                     // Destroy Lobby/Session
                     axios.post(this.endpoint+'destroy-game', {
                         session_id: this.lobby_game.session_id
+                    });
+                }
+
+                // Check if the User who left was the Question Ninja
+                if (this.current_ninja === this.question_ninja) {
+                    // Pick another User in the Lobby to be the Question Ninja and restart the round
+                    let new_user = (this.users[0]).username;
+
+                    // Send a round reset message to rest of the Game Lobby with the new round's Question Ninja
+                    axios.post(this.endpoint+'new-question-ninja', {
+                        session_id: this.lobby_game.session_id,
+                        username: new_user
                     });
                 }
 
@@ -344,6 +398,7 @@
             postQuestion() {
                 // Disable the Question Ninja's Form
                 this.postedQuestion = this.question;
+                this.error = null;
 
                 // Send Request to update other player's games
                 axios.post(this.endpoint+'post-question', {
@@ -361,6 +416,7 @@
                 // Stop Question Timer
                 clearInterval(this.timerObject);
                 this.timerObject = null;
+                this.error = null;
 
                 if (this.question_ninja !== this.current_ninja) {
                     // Question Ninja submitted a Question
@@ -413,6 +469,22 @@
                     });
             },
 
+            // (BROADCAST METHOD) Question Ninja left, picked New Question Ninja
+            newQuestionNinja(username) {
+                // Clear Timer and show all Answers
+                clearInterval(this.timerObject);
+                this.timerObject = null;
+
+                // Display message to Game Lobby
+                this.error = 'Player has left, picking a new Ninja to ask a Question';
+
+                // Wait for a few seconds then continue on to the next Round
+                let env = this;
+                setTimeout(function () {
+                    env.startNextRound(username);
+                }, 5000);
+            },
+
             // (BROADCAST METHOD) Display the Round's Winner
             roundWinner(username) {
                 // Clear Timer and show all Answers
@@ -422,6 +494,7 @@
 
                 // Display Round Winner to everyone
                 this.round_winner = username;
+                this.error = null;
 
                 // Check if the Round Winner is the current Authed Ninja
                 if (username === this.current_ninja) {
@@ -482,6 +555,7 @@
             matchWinner(username) {
                 // Display Winner
                 this.match_winner = username;
+                this.error = null;
 
                 // Stop any Timer
                 clearInterval(this.timerObject);

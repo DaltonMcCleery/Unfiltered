@@ -58778,6 +58778,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -58790,6 +58814,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             rounds_won: 0,
             round_winner: null,
             match_winner: null,
+            error: null,
             // Game Timers
             timerObject: null,
             timer: 90,
@@ -58839,7 +58864,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             env.count = env.count + 1;
         }).leaving(function (user) {
-            // todo
+            // Player has decided to leave the game
+            _this.users = _.remove(_this.users, function (lobby_user) {
+                return lobby_user.username !== user.username;
+            });
+            _this.count = _this.count - 1;
+
+            if (_this.count === 0) {
+                // Destroy Game
+                axios.post(_this.endpoint + 'destroy-game', {
+                    session_id: _this.lobby_game.session_id
+                });
+            }
+        }).listen('newQuestionNinja', function (data) {
+            _this.newQuestionNinja(data.username);
         }).listen('newQuestion', function (data) {
             _this.newQuestion(data.question);
         }).listen('answerQuestion', function (data) {
@@ -58866,6 +58904,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     // Leave Lobby Event Channel before the Vue Component is destroyed
     beforeDestroy: function beforeDestroy() {
         Echo.leave('lobby.' + this.lobby_game.session_id);
+        this.leaveGame();
     },
 
 
@@ -58874,6 +58913,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         start: function start() {
             // Pick which User goes First (Host)
             this.question_ninja = this.lobby_game.host.username;
+            this.error = null;
 
             // Initialize and Start the Game
             if (this.question_ninja === this.current_ninja) {
@@ -58920,6 +58960,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.users = _.remove(this.users, function (lobby_user) {
                 return lobby_user.username !== env.current_ninja;
             });
+
             this.count = this.count - 1;
 
             // Check if Last User left
@@ -58927,6 +58968,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // Destroy Lobby/Session
                 axios.post(this.endpoint + 'destroy-game', {
                     session_id: this.lobby_game.session_id
+                });
+            }
+
+            // Check if the User who left was the Question Ninja
+            if (this.current_ninja === this.question_ninja) {
+                // Pick another User in the Lobby to be the Question Ninja and restart the round
+                var new_user = this.users[0].username;
+
+                // Send a round reset message to rest of the Game Lobby with the new round's Question Ninja
+                axios.post(this.endpoint + 'new-question-ninja', {
+                    session_id: this.lobby_game.session_id,
+                    username: new_user
                 });
             }
 
@@ -58939,6 +58992,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         postQuestion: function postQuestion() {
             // Disable the Question Ninja's Form
             this.postedQuestion = this.question;
+            this.error = null;
 
             // Send Request to update other player's games
             axios.post(this.endpoint + 'post-question', {
@@ -58958,6 +59012,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // Stop Question Timer
             clearInterval(this.timerObject);
             this.timerObject = null;
+            this.error = null;
 
             if (this.question_ninja !== this.current_ninja) {
                 // Question Ninja submitted a Question
@@ -59018,6 +59073,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
 
+        // (BROADCAST METHOD) Question Ninja left, picked New Question Ninja
+        newQuestionNinja: function newQuestionNinja(username) {
+            // Clear Timer and show all Answers
+            clearInterval(this.timerObject);
+            this.timerObject = null;
+
+            // Display message to Game Lobby
+            this.error = 'Player has left, picking a new Ninja to ask a Question';
+
+            // Wait for a few seconds then continue on to the next Round
+            var env = this;
+            setTimeout(function () {
+                env.startNextRound(username);
+            }, 5000);
+        },
+
+
         // (BROADCAST METHOD) Display the Round's Winner
         roundWinner: function roundWinner(username) {
             // Clear Timer and show all Answers
@@ -59027,6 +59099,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             // Display Round Winner to everyone
             this.round_winner = username;
+            this.error = null;
 
             // Check if the Round Winner is the current Authed Ninja
             if (username === this.current_ninja) {
@@ -59090,6 +59163,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         matchWinner: function matchWinner(username) {
             // Display Winner
             this.match_winner = username;
+            this.error = null;
 
             // Stop any Timer
             clearInterval(this.timerObject);
@@ -59153,7 +59227,7 @@ var render = function() {
           ])
         ])
       : _c("div", [
-          _c("section", { staticClass: "hero is-medium is-info is-bold" }, [
+          _c("section", { staticClass: "hero is-small is-info is-bold" }, [
             _c("div", { staticClass: "hero-body" }, [
               _vm.question_ninja === _vm.current_ninja
                 ? _c("div", { staticClass: "container" }, [
@@ -59282,7 +59356,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _vm.round_winner
-            ? _c("section", { staticClass: "hero is-danger" }, [
+            ? _c("section", { staticClass: "hero is-light is-bold" }, [
                 _c("div", { staticClass: "hero-body" }, [
                   _c("div", { staticClass: "container" }, [
                     _c("h1", { staticClass: "title" }, [
@@ -59290,6 +59364,22 @@ var render = function() {
                         '\n                        Round Winner: "' +
                           _vm._s(_vm.round_winner) +
                           '"\n                    '
+                      )
+                    ])
+                  ])
+                ])
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.error
+            ? _c("section", { staticClass: "hero is-danger" }, [
+                _c("div", { staticClass: "hero-body" }, [
+                  _c("div", { staticClass: "container" }, [
+                    _c("h2", { staticClass: "title" }, [
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(_vm.error) +
+                          "\n                    "
                       )
                     ])
                   ])
@@ -59361,17 +59451,56 @@ var render = function() {
                     "div",
                     { staticClass: "container", attrs: { align: "center" } },
                     [
-                      _c(
-                        "b-message",
-                        { attrs: { type: "is-info", "has-icon": "" } },
-                        [
-                          _vm._v(
-                            "\n                        Waiting on All Ninja's to answer...\n                    "
-                          )
-                        ]
-                      )
-                    ],
-                    1
+                      _vm.question_ninja === _vm.current_ninja
+                        ? _c("div", [
+                            !_vm.question
+                              ? _c(
+                                  "div",
+                                  [
+                                    _c(
+                                      "b-message",
+                                      {
+                                        attrs: {
+                                          type: "is-info",
+                                          "has-icon": ""
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                                Waiting on All Ninja's to answer...\n                            "
+                                        )
+                                      ]
+                                    )
+                                  ],
+                                  1
+                                )
+                              : _vm._e()
+                          ])
+                        : _c("div", [
+                            !_vm.canAnswer
+                              ? _c(
+                                  "div",
+                                  [
+                                    _c(
+                                      "b-message",
+                                      {
+                                        attrs: {
+                                          type: "is-info",
+                                          "has-icon": ""
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                                Waiting on All Ninja's to answer...\n                            "
+                                        )
+                                      ]
+                                    )
+                                  ],
+                                  1
+                                )
+                              : _vm._e()
+                          ])
+                    ]
                   ),
               _vm._v(" "),
               _vm.question_ninja !== _vm.current_ninja
@@ -59397,10 +59526,7 @@ var render = function() {
                                 [
                                   _c(
                                     "b-field",
-                                    {
-                                      staticStyle: { color: "white" },
-                                      attrs: { label: "Your Answer" }
-                                    },
+                                    { attrs: { label: "Your Answer" } },
                                     [
                                       _c("b-input", {
                                         attrs: {
