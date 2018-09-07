@@ -149,14 +149,9 @@ class LobbyController extends Controller
         // Check if Game exists
         //todo
 
-        if ($game->current_sessions <= $game->max_sessions) {
+        if ($game->current_sessions <= $game->max_sessions && $game->status !== 1) {
             if (Auth::user()->username === $game->Host->username) {
-                // Host starting Game
-                Games::where('id', $game->id)
-                    ->update([
-                        'status' => 1
-                    ]);
-
+                // Host starting Game (don't update session
                 return view('game.play', [
                     'game' => $game
                 ]);
