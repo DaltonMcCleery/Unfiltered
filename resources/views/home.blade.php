@@ -1,5 +1,6 @@
 @extends('wrapper')
 @section('content')
+
     <section class="hero is-medium is-dark is-bold">
         <div class="hero-body">
             <div class="container" align="center">
@@ -53,7 +54,15 @@
                     </div>
                 </div>
 
-                <br><br>
+                <br>
+
+                <article class="message is-warning">
+                    <div class="message-body">
+                        Giphy support coming soon!
+                    </div>
+                </article>
+
+                <br>
 
                 <h2 class="subtitle">
                     That being said, we do take personal threats and attacks on our Users very seriously.
@@ -64,7 +73,5 @@
             </div>
         </div>
     </section>
-
-    </div>
 
 @endsection

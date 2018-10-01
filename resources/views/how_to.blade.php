@@ -54,6 +54,11 @@
                     {{-- Game Rules --}}
                     <div id="game-rules" class="content">
                         <h4 class="subtitle"><b>Game Rules</b></h4>
+                        <article class="message is-warning">
+                            <div class="message-body">
+                                Giphy support coming soon!
+                            </div>
+                        </article>
                         <p>
                             The main parts of playing the Unfiltered Ninjas game are:
                         </p>
