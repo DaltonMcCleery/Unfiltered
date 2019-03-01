@@ -53,6 +53,8 @@ class LoginController extends Controller
             // Authentication passed...
             return redirect('/play')->with('success', 'You have been logged in!');
         }
+
+        return redirect()->back()->withInput()->with('error', 'Incorrect Credz');
     }
 
     /**
